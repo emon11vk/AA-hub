@@ -4,6 +4,7 @@ export const seedTaiKhoanKeToan = [
   { id: '112', soHieu: '112', tenTaiKhoan: 'Tiền gửi ngân hàng', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'TAI_SAN' },
   { id: '131', soHieu: '131', tenTaiKhoan: 'Phải thu của khách hàng', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'TAI_SAN' },
   { id: '133', soHieu: '133', tenTaiKhoan: 'Thuế GTGT được khấu trừ', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'TAI_SAN' },
+  { id: '1331', soHieu: '1331', tenTaiKhoan: 'Thuế GTGT được khấu trừ của hàng hóa, dịch vụ', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'TAI_SAN' },
   { id: '141', soHieu: '141', tenTaiKhoan: 'Tạm ứng', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'TAI_SAN' },
   { id: '152', soHieu: '152', tenTaiKhoan: 'Nguyên liệu, vật liệu', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'TAI_SAN' },
   { id: '153', soHieu: '153', tenTaiKhoan: 'Công cụ, dụng cụ', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'TAI_SAN' },
@@ -16,6 +17,8 @@ export const seedTaiKhoanKeToan = [
   // NGUỒN VỐN
   { id: '331', soHieu: '331', tenTaiKhoan: 'Phải trả cho người bán', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'NGUON_VON' },
   { id: '333', soHieu: '333', tenTaiKhoan: 'Thuế và các khoản phải nộp Nhà nước', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'NGUON_VON' },
+  { id: '3331', soHieu: '3331', tenTaiKhoan: 'Thuế GTGT phải nộp', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'NGUON_VON' },
+  { id: '33311', soHieu: '33311', tenTaiKhoan: 'Thuế GTGT đầu ra', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'NGUON_VON' },
   { id: '334', soHieu: '334', tenTaiKhoan: 'Phải trả người lao động', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'NGUON_VON' },
   { id: '338', soHieu: '338', tenTaiKhoan: 'Phải trả, phải nộp khác', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'NGUON_VON' },
   { id: '411', soHieu: '411', tenTaiKhoan: 'Vốn đầu tư của chủ sở hữu', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'NGUON_VON' },
@@ -23,6 +26,7 @@ export const seedTaiKhoanKeToan = [
 
   // DOANH THU
   { id: '511', soHieu: '511', tenTaiKhoan: 'Doanh thu bán hàng và cung cấp dịch vụ', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'DOANH_THU' },
+  { id: '5111', soHieu: '5111', tenTaiKhoan: 'Doanh thu bán hàng hóa', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'DOANH_THU' },
   { id: '515', soHieu: '515', tenTaiKhoan: 'Doanh thu hoạt động tài chính', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'DOANH_THU' },
   { id: '711', soHieu: '711', tenTaiKhoan: 'Thu nhập khác', duNoDauKy: 0, duCoDauKy: 0, loaiTaiKhoan: 'DOANH_THU' },
 

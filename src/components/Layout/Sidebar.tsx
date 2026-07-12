@@ -30,30 +30,7 @@ const navItems: NavItem[] = [
     label: 'Nghiệp Vụ Tiền',
     icon: DollarSign,
     children: [
-      {
-        id: 'quy-tien-mat',
-        label: 'Qũy Tiền Mặt',
-        icon: Wallet,
-        children: [
-          { id: 'tm-danh-sach', label: 'Danh sách chứng từ', path: '/vouchers/cash' },
-          { id: 'tm-thu-tien', label: 'Thu tiền', path: '/vouchers/form/PHIEU_THU' },
-          { id: 'tm-thu-tien-kh', label: 'Thu tiền Khách hàng', path: '/vouchers/form/PHIEU_THU_KH' },
-          { id: 'tm-chi-tien', label: 'Chi tiền', path: '/vouchers/form/PHIEU_CHI' },
-          { id: 'tm-chi-tien-ncc', label: 'Chi tiền Nhà cung cấp', path: '/vouchers/form/PHIEU_CHI_NCC' },
-        ],
-      },
-      {
-        id: 'tien-gui-ngan-hang',
-        label: 'Tiền Gửi Ngân Hàng',
-        icon: Landmark,
-        children: [
-          { id: 'nh-danh-sach', label: 'Danh sách chứng từ', path: '/vouchers/bank' },
-          { id: 'nh-thu-tien', label: 'Thu tiền', path: '/vouchers/form/THU_TIEN_GUI' },
-          { id: 'nh-thu-tien-kh', label: 'Thu tiền Khách hàng', path: '/vouchers/form/THU_TIEN_GUI_KH' },
-          { id: 'nh-chi-tien', label: 'Chi tiền', path: '/vouchers/form/UY_NHIEM_CHI' },
-          { id: 'nh-chi-tien-ncc', label: 'Chi tiền Nhà cung cấp', path: '/vouchers/form/UY_NHIEM_CHI_NCC' },
-        ],
-      },
+      { id: 'danh-sach-chung-tu', label: 'Danh sách chứng từ', path: '/vouchers' },
     ]
   },
   {
@@ -69,7 +46,7 @@ const navItems: NavItem[] = [
   }
 ];
 
-const MenuItem = ({ item, level = 0, isInsideActiveBlock = false }: { item: NavItem; level?: number; isInsideActiveBlock?: boolean }) => {
+const MenuItem = ({ item, level = 0 }: { item: NavItem; level?: number }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
@@ -83,8 +60,6 @@ const MenuItem = ({ item, level = 0, isInsideActiveBlock = false }: { item: NavI
   };
 
   const isParentActive = (item.path && location.pathname.startsWith(item.path)) || (hasChildren && isChildActive(item.children!));
-  
-  const isActiveBlock = level === 0 ? isParentActive : isInsideActiveBlock;
 
   useEffect(() => {
     if (isParentActive && hasChildren) {
@@ -94,32 +69,28 @@ const MenuItem = ({ item, level = 0, isInsideActiveBlock = false }: { item: NavI
 
   if (hasChildren) {
     return (
-      <div className={`mb-1 transition-colors ${level === 0 && isParentActive ? 'bg-[#b91c1c] text-white' : ''}`}>
+      <div className="mb-0.5">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-full flex items-center py-3 pr-4 font-serif font-bold transition-colors ${
-            isActiveBlock 
-              ? 'bg-[#991b1b] border-y border-black/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]' 
-              : 'hover:bg-gray-50'
+          className={`w-full flex items-center py-2 pr-4 font-sans transition-colors focus:outline-none ${
+            isParentActive 
+              ? 'text-gray-900 font-semibold' 
+              : 'text-gray-700 hover:bg-gray-50 font-medium'
           }`}
-          style={{ paddingLeft: `${level * 1.2 + 1.5}rem` }}
+          style={{ paddingLeft: `${level * 1.25 + 1.25}rem` }}
         >
-          {item.icon && <item.icon size={18} className="mr-3 shrink-0" />}
-          <span className="flex-1 text-left text-[15px] tracking-wide">{item.label}</span>
+          {item.icon && <item.icon size={18} className={`mr-2.5 shrink-0 ${isParentActive ? 'text-[#b91c1c]' : 'text-gray-400'}`} />}
+          <span className="flex-1 text-left text-[14px]">{item.label}</span>
           {isOpen ? (
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 shadow-sm ${isActiveBlock ? 'bg-white' : 'bg-gray-200'}`}>
-              <ChevronDown size={14} className={isActiveBlock ? 'text-[#b91c1c]' : 'text-gray-600'} />
-            </div>
+            <ChevronDown size={16} className="text-gray-400 shrink-0" />
           ) : (
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${isActiveBlock ? 'bg-white' : 'bg-gray-100'}`}>
-              <ChevronRight size={14} className={isActiveBlock ? 'text-[#b91c1c]' : 'text-gray-400'} />
-            </div>
+            <ChevronRight size={16} className="text-gray-400 shrink-0" />
           )}
         </button>
         {isOpen && (
-          <div className="flex flex-col pb-2">
+          <div className="flex flex-col pb-1">
             {item.children!.map((child) => (
-              <MenuItem key={child.id} item={child} level={level + 1} isInsideActiveBlock={isActiveBlock} />
+              <MenuItem key={child.id} item={child} level={level + 1} />
             ))}
           </div>
         )}
@@ -130,45 +101,50 @@ const MenuItem = ({ item, level = 0, isInsideActiveBlock = false }: { item: NavI
   return (
     <NavLink
       to={item.path || '#'}
-      className={({ isActive: isPathActive }) =>
-        `flex items-center py-2.5 pr-4 mb-1 font-serif text-[14px] transition-colors ${
-          level > 0 ? 'font-medium' : 'font-bold text-[15px] tracking-wide py-3'
-        } ${
-          isPathActive
-            ? (level > 0 ? (isActiveBlock ? 'text-white font-bold bg-white/20' : 'text-[#b91c1c] font-bold bg-gray-50') : 'bg-[#b91c1c] text-white')
-            : (isActiveBlock ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100')
+      className={({ isActive }) =>
+        `flex items-center py-2 pr-4 mb-0.5 font-sans text-[14px] transition-colors focus:outline-none border-l-4 ${
+          isActive
+            ? 'text-gray-900 font-semibold bg-gray-50 border-[#b91c1c]'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent font-medium'
         }`
       }
-      style={{ paddingLeft: `${level * 1.2 + 1.5}rem` }}
+      style={{ paddingLeft: `calc(${level * 1.25 + 1.25}rem - 4px)` }}
     >
-      {item.icon && <item.icon size={18} className="mr-3 shrink-0" />}
-      <span className="flex-1 leading-tight">{item.label}</span>
+      {({ isActive }) => (
+        <>
+          {item.icon && <item.icon size={18} className={`mr-2.5 shrink-0 ${isActive ? 'text-[#b91c1c]' : 'text-gray-400'}`} />}
+          <span className="flex-1 leading-tight">{item.label}</span>
+        </>
+      )}
     </NavLink>
   );
 };
 
 export default function Sidebar() {
   return (
-    <aside className="w-72 bg-white flex flex-col border-r border-border shrink-0 font-serif h-screen sticky top-0 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.1)] z-20">
-      <div className="h-20 flex items-center px-6 border-b border-border">
-        <h1 className="text-xl font-bold text-text-primary flex-1">Thực hành kế toán</h1>
-        <button className="p-2 hover:bg-bg-muted rounded-lg text-text-primary">
-          <Menu size={24} />
+    <aside className="w-[280px] bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen sticky top-0 z-20">
+      <div className="h-16 flex items-center px-5 border-b border-gray-200">
+        <div className="w-8 h-8 bg-[#b91c1c] rounded-md mr-3 flex items-center justify-center shadow-sm">
+          <span className="text-white text-[13px] font-bold tracking-wider font-sans">AA</span>
+        </div>
+        <h1 className="text-[15px] font-semibold text-gray-900 flex-1 font-sans tracking-tight">AA-hub</h1>
+        <button className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 transition-colors">
+          <Menu size={20} />
         </button>
       </div>
       
-      <nav className="flex-1 overflow-y-auto py-4 px-2">
+      <nav className="flex-1 overflow-y-auto py-4 px-0">
         {navItems.map((item) => (
           <MenuItem key={item.id} item={item} />
         ))}
       </nav>
 
-      <div className="p-4 border-t border-border flex items-center justify-between text-xs text-text-muted">
-        <div className="flex items-center gap-1 font-sans text-primary font-bold">
-          <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-white text-[8px]">★</div>
-          MAKE IN VIET NAM
+      <div className="p-4 border-t border-gray-200 flex items-center justify-between font-sans">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-[#b91c1c] rounded-full"></div>
+          <span className="text-gray-600 text-xs font-medium">Thực hành kế toán</span>
         </div>
-        <div className="font-sans font-bold text-green-600">QES</div>
+        <div className="text-gray-400 text-xs">v1.0</div>
       </div>
     </aside>
   );

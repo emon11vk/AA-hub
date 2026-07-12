@@ -76,7 +76,7 @@ export default function BalanceSheet() {
     data['131'] = getEndBalance('131', 'no');
     data['130'] = data['131']; // Phải thu ngắn hạn
 
-    data['141'] = getEndBalance('156', 'no');
+    data['141'] = getEndBalance('152', 'no') + getEndBalance('153', 'no') + getEndBalance('156', 'no');
     data['140'] = data['141']; // Hàng tồn kho
 
     data['162'] = getEndBalance('133', 'no');
@@ -84,21 +84,25 @@ export default function BalanceSheet() {
 
     data['100'] = (data['110'] || 0) + (data['120'] || 0) + (data['130'] || 0) + (data['140'] || 0) + (data['150'] || 0) + (data['160'] || 0);
     
-    // TÀI SẢN DÀI HẠN (Dummy data for structural completeness)
-    data['200'] = 0; 
+    // TÀI SẢN DÀI HẠN
+    data['222'] = getEndBalance('211', 'no') - getEndBalance('214', 'co'); // TSCĐ
+    data['220'] = data['222'];
+    data['200'] = data['220']; 
 
     data['280'] = data['100'] + data['200']; // TỔNG TÀI SẢN
 
     // NỢ PHẢI TRẢ
     data['311'] = getEndBalance('331', 'co');
-    data['310'] = data['311']; 
+    data['313'] = getEndBalance('333', 'co') + getEndBalance('3331', 'co') + getEndBalance('33311', 'co');
+    data['314'] = getEndBalance('334', 'co');
+    data['310'] = data['311'] + data['313'] + data['314']; 
     
     data['330'] = 0; // Nợ dài hạn
     data['300'] = data['310'] + data['330']; // Nợ phải trả
 
     // VỐN CHỦ SỞ HỮU
     data['411'] = getEndBalance('411', 'co');
-    data['420'] = profit; // Lợi nhuận sau thuế chưa phân phối
+    data['420'] = profit + getEndBalance('421', 'co') - getEndBalance('421', 'no'); // Lợi nhuận sau thuế
     
     data['400'] = (data['411'] || 0) + (data['420'] || 0); // Tổng vốn CSH
 

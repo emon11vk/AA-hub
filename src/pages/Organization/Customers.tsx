@@ -117,10 +117,10 @@ export default function Customers() {
               ) : (
                 customers.map((customer) => (
                   <tr key={customer.id} className="border-b border-border hover:bg-bg-muted transition-colors">
-                    <td className="py-4 px-4 font-medium">{customer.ma}</td>
-                    <td className="py-4 px-4">{customer.ten}</td>
-                    <td className="py-4 px-4 text-text-secondary truncate max-w-xs">{customer.diaChi}</td>
-                    <td className="py-4 px-4 font-mono text-xs">{customer.maSoThue}</td>
+                    <td className="py-4 px-4 font-medium text-black">{customer.ma}</td>
+                    <td className="py-4 px-4 text-black">{customer.ten}</td>
+                    <td className="py-4 px-4 text-black truncate max-w-xs">{customer.diaChi}</td>
+                    <td className="py-4 px-4 font-mono text-xs text-black">{customer.maSoThue}</td>
                     <td className="py-4 px-4 text-center">
                       <button 
                         onClick={() => handleDelete(customer.id)}

@@ -129,9 +129,35 @@ export default function VoucherForm() {
 
   const onSubmit = async (data: VoucherFormData) => {
     try {
+      // Tự động sinh bút toán Thuế GTGT
+      const finalButToan: any[] = [];
+      for (const row of data.butToan) {
+        // Thêm bút toán chính (loại bỏ thông tin thuế để Sổ nhật ký không bị lặp, nhưng vẫn có thể giữ lại để view)
+        finalButToan.push({
+          dienGiai: row.dienGiai,
+          tkNo: row.tkNo,
+          tkCo: row.tkCo,
+          soTien: row.soTien,
+          tkThueGTGT: row.tkThueGTGT,
+          soTienThue: row.soTienThue,
+          thueSuat: row.thueSuat
+        });
+        
+        // Sinh bút toán thuế nếu có
+        if (row.soTienThue && row.tkThueGTGT && row.soTienThue > 0) {
+          finalButToan.push({
+            dienGiai: `Thuế GTGT (${row.thueSuat || 0}%) - ${row.dienGiai}`,
+            tkNo: isReceipt ? row.tkNo : row.tkThueGTGT,
+            tkCo: isReceipt ? row.tkThueGTGT : row.tkCo,
+            soTien: row.soTienThue
+          });
+        }
+      }
+
       const voucherData: ChungTu = {
         id: id || crypto.randomUUID(),
         ...data,
+        butToan: finalButToan,
         loaiChungTu,
         loaiTien: 'VND',
         tyGia: 1,
@@ -210,9 +236,8 @@ export default function VoucherForm() {
                 </select>
                 <input
                   {...register('tenDoiTuong')}
-                  className="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-gray-50"
-                  readOnly
-                  placeholder="Tên đối tượng tự động điền"
+                  className="flex-1 px-3 py-2 text-sm border border-border rounded-lg"
+                  placeholder="Tên đối tượng tự động điền hoặc nhập tay"
                 />
               </div>
             </div>
@@ -221,9 +246,8 @@ export default function VoucherForm() {
               <label className="block text-xs font-medium text-text-secondary">Địa chỉ</label>
               <input
                 {...register('diaChi')}
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-gray-50"
-                readOnly
-                placeholder="Địa chỉ tự động điền"
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg"
+                placeholder="Địa chỉ tự động điền hoặc nhập tay"
               />
             </div>
 
@@ -358,8 +382,8 @@ export default function VoucherForm() {
                       <td className="py-2 px-3">
                         <input
                           type="number"
-                          {...register(`butToan.${index}.soTien`)}
-                          className="w-full px-2 py-1.5 text-sm border border-transparent hover:border-gray-300 focus:border-primary rounded bg-transparent focus:bg-white text-right tabular-nums font-bold text-primary"
+                          {...register(`butToan.${index}.soTien`, { valueAsNumber: true })}
+                          className="w-full px-2 py-1.5 text-sm border border-transparent hover:border-gray-300 focus:border-primary rounded bg-transparent focus:bg-white text-right tabular-nums font-bold text-black"
                         />
                       </td>
                     </>
@@ -382,8 +406,8 @@ export default function VoucherForm() {
                       <td className="py-2 px-3">
                         <input
                           type="number"
-                          {...register(`butToan.${index}.soTienThue`)}
-                          className="w-full px-2 py-1.5 text-sm border border-transparent hover:border-gray-300 focus:border-primary rounded bg-transparent focus:bg-white text-right tabular-nums font-bold text-red-600"
+                          {...register(`butToan.${index}.soTienThue`, { valueAsNumber: true })}
+                          className="w-full px-2 py-1.5 text-sm border border-transparent hover:border-gray-300 focus:border-primary rounded bg-transparent focus:bg-white text-right tabular-nums font-bold text-black"
                         />
                       </td>
                       <td className="py-2 px-3">

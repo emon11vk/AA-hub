@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, ChungTu } from '../../db/db';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Search, Eye, Edit, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Search, Eye, Edit, FileText, X } from 'lucide-react';
 import { VoucherTemplate } from '../../components/PrintTemplate/VoucherTemplate';
-import React, { useRef } from 'react';
+import React from 'react';
 
 export default function VoucherList() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const isBank = location.pathname.includes('/bank');
-  const typeFilter = isBank ? 'BANK' : 'CASH';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVoucher, setSelectedVoucher] = useState<ChungTu | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fundType, setFundType] = useState('CASH'); // CASH or BANK
+  const [actionType, setActionType] = useState('RECEIPT'); // RECEIPT or PAYMENT
   
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -24,12 +24,7 @@ export default function VoucherList() {
   ) || [];
 
   const filteredVouchers = vouchers.filter((v) => {
-    // Filter by Cash / Bank based on route
-    const isVoucherBank = v.loaiChungTu.includes('TIEN_GUI') || v.loaiChungTu.includes('UY_NHIEM') || v.loaiChungTu === 'GIAY_BAO';
-    if (typeFilter === 'BANK' && !isVoucherBank) return false;
-    if (typeFilter === 'CASH' && isVoucherBank) return false;
-
-    // Filter by search term
+    // Both Cash and Bank are shown, we only filter by search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       return (
@@ -49,12 +44,24 @@ export default function VoucherList() {
     }, 100);
   };
 
+  const handleCreateVoucher = () => {
+    let route = '';
+    if (fundType === 'CASH') {
+      if (actionType === 'RECEIPT') route = '/vouchers/form/PHIEU_THU';
+      else route = '/vouchers/form/PHIEU_CHI';
+    } else {
+      if (actionType === 'RECEIPT') route = '/vouchers/form/THU_TIEN_GUI';
+      else route = '/vouchers/form/UY_NHIEM_CHI';
+    }
+    navigate(route);
+  };
+
   const getVoucherTypeLabel = (type: string) => {
     switch(type) {
-      case 'PHIEU_THU': case 'PHIEU_THU_KH': return 'Phiếu thu';
-      case 'PHIEU_CHI': case 'PHIEU_CHI_NCC': return 'Phiếu chi';
-      case 'THU_TIEN_GUI': case 'THU_TIEN_GUI_KH': return 'Giấy báo có';
-      case 'UY_NHIEM_CHI': case 'UY_NHIEM_CHI_NCC': return 'Ủy nhiệm chi';
+      case 'PHIEU_THU': case 'PHIEU_THU_KH': return 'Phiếu thu (TM)';
+      case 'PHIEU_CHI': case 'PHIEU_CHI_NCC': return 'Phiếu chi (TM)';
+      case 'THU_TIEN_GUI': case 'THU_TIEN_GUI_KH': return 'Giấy báo có (TGNH)';
+      case 'UY_NHIEM_CHI': case 'UY_NHIEM_CHI_NCC': return 'Ủy nhiệm chi (TGNH)';
       case 'GIAY_BAO': return 'Giấy báo';
       default: return type;
     }
@@ -67,21 +74,15 @@ export default function VoucherList() {
           <div className="flex items-center gap-3">
             <FileText className="text-primary" size={28} />
             <h1 className="text-2xl font-serif font-bold text-text-primary">
-              {isBank ? 'Nghiệp vụ Tiền gửi ngân hàng' : 'Nghiệp vụ Tiền mặt'}
+              Nghiệp vụ Tiền (Cốt lõi)
             </h1>
           </div>
           <div className="flex gap-3">
             <button 
-              onClick={() => navigate(isBank ? '/vouchers/form/THU_TIEN_GUI' : '/vouchers/form/PHIEU_THU')}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
+              onClick={() => setIsModalOpen(true)}
+              className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
             >
-              <Plus size={16} /> Thu tiền
-            </button>
-            <button 
-              onClick={() => navigate(isBank ? '/vouchers/form/UY_NHIEM_CHI' : '/vouchers/form/PHIEU_CHI')}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
-            >
-              <Plus size={16} /> Chi tiền
+              <Plus size={16} /> Tạo chứng từ
             </button>
           </div>
         </div>
@@ -132,7 +133,7 @@ export default function VoucherList() {
                         </td>
                         <td className="py-3 px-4 font-medium truncate max-w-[200px]">{v.tenDoiTuong}</td>
                         <td className="py-3 px-4 text-text-secondary truncate max-w-[250px]">{v.lyDo}</td>
-                        <td className="py-3 px-4 text-right font-bold text-text-primary tabular-nums">
+                        <td className="py-3 px-4 text-right font-bold text-black tabular-nums">
                           {total > 0 ? total.toLocaleString('vi-VN') : '-'}
                         </td>
                         <td className="py-3 px-4 text-center">
@@ -154,6 +155,61 @@ export default function VoucherList() {
           </div>
         </div>
       </div>
+
+      {/* Modal Tạo Chứng Từ */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
+            <div className="flex justify-between items-center p-6 border-b border-border">
+              <h2 className="text-xl font-bold text-text-primary">Tạo chứng từ mới</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-text-secondary hover:text-text-primary">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">Quỹ (Loại tiền)</label>
+                <select 
+                  value={fundType}
+                  onChange={(e) => setFundType(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                >
+                  <option value="CASH">Tiền mặt (111)</option>
+                  <option value="BANK">Tiền gửi ngân hàng (112)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">Loại nghiệp vụ</label>
+                <select 
+                  value={actionType}
+                  onChange={(e) => setActionType(e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                >
+                  <option value="RECEIPT">Thu tiền</option>
+                  <option value="PAYMENT">Chi tiền</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3">
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 border border-border text-text-secondary rounded-lg hover:bg-gray-50 font-medium"
+                >
+                  Hủy
+                </button>
+                <button 
+                  onClick={handleCreateVoucher}
+                  className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg font-medium"
+                >
+                  Tạo chứng từ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hidden Print Template */}
       <div className="hidden print:block absolute top-0 left-0 w-full bg-white z-50">

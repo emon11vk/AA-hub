@@ -25,8 +25,7 @@ function App() {
             <Route index element={<Navigate to="info" replace />} />
           </Route>
           <Route path="vouchers">
-            <Route path="cash" element={<VoucherList />} />
-            <Route path="bank" element={<VoucherList />} />
+            <Route index element={<VoucherList />} />
             <Route path="form/:type/:id?" element={<VoucherForm />} />
           </Route>
           <Route path="reports">

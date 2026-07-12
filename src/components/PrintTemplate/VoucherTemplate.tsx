@@ -78,10 +78,10 @@ export const VoucherTemplate = React.forwardRef<HTMLDivElement, VoucherTemplateP
         <table className="w-full border-collapse border border-black text-sm mb-6">
           <thead>
             <tr>
-              <th className="border border-black p-2">Diễn giải</th>
-              <th className="border border-black p-2">TK Nợ</th>
-              <th className="border border-black p-2">TK Có</th>
-              <th className="border border-black p-2">Số tiền</th>
+              <th className="border border-black p-2 text-black font-bold">Diễn giải</th>
+              <th className="border border-black p-2 text-black font-bold">Ghi Nợ</th>
+              <th className="border border-black p-2 text-black font-bold">Ghi Có</th>
+              <th className="border border-black p-2 text-black font-bold">Thành tiền</th>
             </tr>
           </thead>
           <tbody>

@@ -113,8 +113,8 @@ export default function Suppliers() {
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Mã NCC</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Tên nhà cung cấp</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Địa chỉ</th>
-                <th className="py-3 px-4 text-left font-bold text-text-primary">Mã số thuế</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Mặt hàng</th>
+                <th className="py-3 px-4 text-left font-bold text-text-primary">Mã số thuế</th>
                 <th className="py-3 px-4 text-center font-bold text-text-primary w-20">Xóa</th>
               </tr>
             </thead>
@@ -128,11 +128,11 @@ export default function Suppliers() {
               ) : (
                 suppliers.map((supplier) => (
                   <tr key={supplier.id} className="border-b border-border hover:bg-bg-muted transition-colors">
-                    <td className="py-4 px-4 font-medium">{supplier.ma}</td>
-                    <td className="py-4 px-4">{supplier.ten}</td>
-                    <td className="py-4 px-4 text-text-secondary truncate max-w-xs">{supplier.diaChi}</td>
-                    <td className="py-4 px-4 font-mono text-xs">{supplier.maSoThue}</td>
-                    <td className="py-4 px-4 text-primary">{supplier.tenHangHoa}</td>
+                    <td className="py-4 px-4 font-medium text-black">{supplier.ma}</td>
+                    <td className="py-4 px-4 text-black">{supplier.ten}</td>
+                    <td className="py-4 px-4 text-black truncate max-w-xs">{supplier.diaChi}</td>
+                    <td className="py-4 px-4 text-black">{supplier.tenHangHoa}</td>
+                    <td className="py-4 px-4 font-mono text-xs text-black">{supplier.maSoThue}</td>
                     <td className="py-4 px-4 text-center">
                       <button 
                         onClick={() => handleDelete(supplier.id)}

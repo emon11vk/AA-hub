@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, LoaiChungTu } from '../../db/db';
-import { Filter, Search, Send } from 'lucide-react';
+import { Filter, Search, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function GeneralJournal() {
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
   const [docType, setDocType] = useState<LoaiChungTu | ''>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 30;
 
   const chungTuList = useLiveQuery(() => db.chungTu.toArray());
 
@@ -27,29 +29,38 @@ export default function GeneralJournal() {
 
     const lines: any[] = [];
     filtered.forEach(ct => {
-      ct.butToan.forEach(bt => {
-        lines.push({
-          id: bt.id + '-no',
-          ngayHachToan: ct.ngayHachToan,
-          ngayChungTu: ct.ngayChungTu,
-          soChungTu: ct.soChungTu,
-          loaiChungTu: ct.loaiChungTu,
-          dienGiai: bt.dienGiai || ct.dienGiaiChung,
-          tkDoiUng: bt.tkNo,
-          psNo: bt.soTien,
-          psCo: 0,
-        });
-        lines.push({
-          id: bt.id + '-co',
-          ngayHachToan: ct.ngayHachToan,
-          ngayChungTu: ct.ngayChungTu,
-          soChungTu: ct.soChungTu,
-          loaiChungTu: ct.loaiChungTu,
-          dienGiai: bt.dienGiai || ct.dienGiaiChung,
-          tkDoiUng: bt.tkCo,
-          psNo: 0,
-          psCo: bt.soTien,
-        });
+      ct.butToan.forEach((bt, index) => {
+        const excludedPrefixes = ['5', '6', '7', '8'];
+        
+        // Push Debit Line if not excluded
+        if (bt.tkNo && !excludedPrefixes.includes(bt.tkNo.charAt(0))) {
+          lines.push({
+            id: `${ct.id}-no-${index}`,
+            ngayHachToan: ct.ngayHachToan,
+            ngayChungTu: ct.ngayChungTu,
+            soChungTu: ct.soChungTu,
+            loaiChungTu: ct.loaiChungTu,
+            dienGiai: bt.dienGiai || ct.dienGiaiChung,
+            tkDoiUng: bt.tkNo,
+            psNo: bt.soTien,
+            psCo: 0,
+          });
+        }
+        
+        // Push Credit Line if not excluded
+        if (bt.tkCo && !excludedPrefixes.includes(bt.tkCo.charAt(0))) {
+          lines.push({
+            id: `${ct.id}-co-${index}`,
+            ngayHachToan: ct.ngayHachToan,
+            ngayChungTu: ct.ngayChungTu,
+            soChungTu: ct.soChungTu,
+            loaiChungTu: ct.loaiChungTu,
+            dienGiai: bt.dienGiai || ct.dienGiaiChung,
+            tkDoiUng: bt.tkCo,
+            psNo: 0,
+            psCo: bt.soTien,
+          });
+        }
       });
     });
 
@@ -57,6 +68,23 @@ export default function GeneralJournal() {
     lines.sort((a, b) => new Date(b.ngayHachToan).getTime() - new Date(a.ngayHachToan).getTime());
     return lines;
   }, [chungTuList, fromDate, toDate, docType]);
+
+  const totalPsNo = useMemo(() => journalEntries.reduce((sum, line) => sum + (line.psNo || 0), 0), [journalEntries]);
+  const totalPsCo = useMemo(() => journalEntries.reduce((sum, line) => sum + (line.psCo || 0), 0), [journalEntries]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(journalEntries.length / itemsPerPage);
+  const currentEntries = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return journalEntries.slice(startIndex, startIndex + itemsPerPage);
+  }, [journalEntries, currentPage]);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   const docTypeLabels: Record<string, string> = {
     'PHIEU_THU': 'Phiếu thu',
@@ -78,7 +106,7 @@ export default function GeneralJournal() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6 pb-12">
       <div className="card !p-0 overflow-hidden shadow-sm bg-white">
         <div className="p-6 border-b border-border flex items-center justify-between">
           <div>
@@ -102,7 +130,7 @@ export default function GeneralJournal() {
               type="date" 
               className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
+              onChange={(e) => { setFromDate(e.target.value); setCurrentPage(1); }}
             />
           </div>
           <div className="flex-1 min-w-[200px]">
@@ -111,7 +139,7 @@ export default function GeneralJournal() {
               type="date" 
               className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
+              onChange={(e) => { setToDate(e.target.value); setCurrentPage(1); }}
             />
           </div>
           <div className="flex-1 min-w-[200px]">
@@ -119,7 +147,7 @@ export default function GeneralJournal() {
             <select 
               className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
               value={docType}
-              onChange={(e) => setDocType(e.target.value as any)}
+              onChange={(e) => { setDocType(e.target.value as any); setCurrentPage(1); }}
             >
               <option value="">Chọn loại chứng từ</option>
               {Object.entries(docTypeLabels).map(([val, label]) => (
@@ -144,15 +172,15 @@ export default function GeneralJournal() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {journalEntries.length === 0 ? (
+                {currentEntries.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-text-muted">
                       Không tìm thấy dữ liệu hạch toán nào
                     </td>
                   </tr>
                 ) : (
-                  journalEntries.map((line, index) => (
-                    <tr key={index} className="even:bg-gray-50 hover:bg-gray-100 transition-colors">
+                  currentEntries.map((line) => (
+                    <tr key={line.id} className="even:bg-gray-50 hover:bg-gray-100 transition-colors">
                       <td className="px-4 py-4 whitespace-nowrap font-medium text-text-primary">
                         {line.ngayHachToan}
                       </td>
@@ -168,18 +196,58 @@ export default function GeneralJournal() {
                       <td className="px-4 py-4 text-center font-medium text-text-primary">
                         {line.tkDoiUng || '-'}
                       </td>
-                      <td className="px-4 py-4 text-right text-text-secondary tabular-nums">
+                      <td className="px-4 py-4 text-right text-black tabular-nums">
                         {line.psNo > 0 ? formatCurrency(line.psNo) : '0'}
                       </td>
-                      <td className="px-4 py-4 text-right text-text-secondary tabular-nums">
+                      <td className="px-4 py-4 text-right text-black tabular-nums">
                         {line.psCo > 0 ? formatCurrency(line.psCo) : '0'}
                       </td>
                     </tr>
                   ))
                 )}
+                {/* Dòng Tổng cộng */}
+                {journalEntries.length > 0 && (
+                  <tr className="bg-gray-50 font-bold border-t-2 border-gray-300">
+                    <td colSpan={5} className="px-4 py-4 text-right text-text-primary uppercase text-xs">Tổng cộng:</td>
+                    <td className="px-4 py-4 text-right text-black tabular-nums">
+                      {totalPsNo > 0 ? formatCurrency(totalPsNo) : '0'}
+                    </td>
+                    <td className="px-4 py-4 text-right text-black tabular-nums">
+                      {totalPsCo > 0 ? formatCurrency(totalPsCo) : '0'}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <span className="text-sm text-text-secondary">
+                Hiển thị {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, journalEntries.length)} trong tổng số {journalEntries.length} bản ghi
+              </span>
+              <div className="flex gap-2">
+                <button 
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  className="p-2 border border-border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <span className="flex items-center px-4 font-medium text-sm">
+                  Trang {currentPage} / {totalPages}
+                </span>
+                <button 
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="p-2 border border-border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

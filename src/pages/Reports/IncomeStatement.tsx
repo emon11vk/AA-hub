@@ -240,6 +240,13 @@ export default function IncomeStatement() {
           </table>
         </div>
       </div>
+      <style>{`
+        @media print {
+          table td.text-right, table td.text-right * {
+            color: black !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
