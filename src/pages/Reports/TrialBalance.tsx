@@ -1,11 +1,18 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
-import { Calculator, Filter } from 'lucide-react';
+import { Calculator, Filter, Printer } from 'lucide-react';
+import { useReactToPrint } from 'react-to-print';
 
 export default function TrialBalance() {
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
+
+  const componentRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: 'Bang-Can-Doi-So-Phat-Sinh',
+  });
 
   const taiKhoanList = useLiveQuery(() => db.taiKhoanKeToan.toArray());
   const chungTuList = useLiveQuery(() => db.chungTu.toArray());
@@ -102,14 +109,24 @@ export default function TrialBalance() {
 
   return (
     <div className="p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-blue-500/10 p-2 rounded-lg">
-          <Calculator className="text-blue-600" size={24} />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="bg-blue-500/10 p-2 rounded-lg">
+            <Calculator className="text-blue-600" size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">Bảng Cân Đối Số Phát Sinh</h1>
+            <p className="text-text-muted text-sm mt-1">Tổng hợp số dư và phát sinh các tài khoản</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Bảng Cân Đối Số Phát Sinh</h1>
-          <p className="text-text-muted text-sm mt-1">Tổng hợp số dư và phát sinh các tài khoản</p>
-        </div>
+        
+        <button 
+          onClick={handlePrint}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg shadow-sm hover:bg-bg-muted transition-colors font-medium text-text-primary"
+        >
+          <Printer size={18} />
+          In Báo Cáo
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-border p-4 mb-6">
@@ -139,7 +156,14 @@ export default function TrialBalance() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
+      <div ref={componentRef} className="bg-white rounded-xl shadow-sm border border-border overflow-hidden print:border-none print:shadow-none print:p-4">
+        {/* Print Header only visible when printing */}
+        <div className="hidden print:block text-center mb-6">
+          <h2 className="text-xl font-bold uppercase mb-1">Bảng cân đối số phát sinh</h2>
+          <p className="text-sm font-medium">
+            {fromDate && toDate ? `Từ ngày ${new Date(fromDate).toLocaleDateString('vi-VN')} đến ${new Date(toDate).toLocaleDateString('vi-VN')}` : `Tại ngày ${new Date().toLocaleDateString('vi-VN')}`}
+          </p>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="bg-bg-muted text-text-secondary font-medium border-b border-border">

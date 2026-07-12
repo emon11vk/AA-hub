@@ -1,11 +1,18 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
-import { TrendingUp, Filter } from 'lucide-react';
+import { TrendingUp, Filter, Printer } from 'lucide-react';
+import { useReactToPrint } from 'react-to-print';
 
 export default function IncomeStatement() {
   const [fromDate, setFromDate] = useState<string>('');
   const [toDate, setToDate] = useState<string>('');
+
+  const componentRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: 'Bao-Cao-Ket-Qua-Hoat-Dong-Kinh-Doanh',
+  });
 
   const taiKhoanList = useLiveQuery(() => db.taiKhoanKeToan.toArray());
   const chungTuList = useLiveQuery(() => db.chungTu.toArray());
@@ -87,14 +94,24 @@ export default function IncomeStatement() {
 
   return (
     <div className="p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-green-500/10 p-2 rounded-lg">
-          <TrendingUp className="text-green-600" size={24} />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="bg-green-500/10 p-2 rounded-lg">
+            <TrendingUp className="text-green-600" size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">Báo Cáo Kết Quả Hoạt Động Kinh Doanh</h1>
+            <p className="text-text-muted text-sm mt-1">Phân tích doanh thu, chi phí và lợi nhuận</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Báo Cáo Kết Quả Hoạt Động Kinh Doanh</h1>
-          <p className="text-text-muted text-sm mt-1">Phân tích doanh thu, chi phí và lợi nhuận</p>
-        </div>
+        
+        <button 
+          onClick={handlePrint}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-lg shadow-sm hover:bg-bg-muted transition-colors font-medium text-text-primary"
+        >
+          <Printer size={18} />
+          In Báo Cáo
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-border p-4 mb-6">
@@ -124,7 +141,7 @@ export default function IncomeStatement() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
+      <div ref={componentRef} className="bg-white rounded-xl shadow-sm border border-border overflow-hidden print:border-none print:shadow-none print:p-4">
         <div className="p-6 border-b border-border text-center bg-gray-50/50">
           <h2 className="text-lg font-bold text-text-primary uppercase tracking-wide">Báo cáo kết quả hoạt động kinh doanh</h2>
           <p className="text-sm text-text-secondary mt-1">Đơn vị tính: VNĐ</p>

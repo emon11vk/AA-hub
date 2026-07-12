@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, LoaiChungTu } from '../../db/db';
-import { Filter, Search, Send, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Filter, Search, Send, ChevronLeft, ChevronRight, Printer } from 'lucide-react';
+import { useReactToPrint } from 'react-to-print';
 
 export default function GeneralJournal() {
   const [fromDate, setFromDate] = useState<string>('');
@@ -9,6 +10,12 @@ export default function GeneralJournal() {
   const [docType, setDocType] = useState<LoaiChungTu | ''>('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 30;
+
+  const componentRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: 'So-Nhat-Ky-Chung',
+  });
 
   const chungTuList = useLiveQuery(() => db.chungTu.toArray());
 
@@ -120,6 +127,12 @@ export default function GeneralJournal() {
             <button className="bg-[#b91c1c] hover:bg-red-800 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
               <Send size={16} /> Nộp Bài
             </button>
+            <button 
+              onClick={handlePrint}
+              className="bg-white border border-border hover:bg-bg-muted text-text-primary px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors shadow-sm"
+            >
+              <Printer size={16} /> In Báo Cáo
+            </button>
           </div>
         </div>
 
@@ -158,7 +171,14 @@ export default function GeneralJournal() {
         </div>
 
         <div className="p-6">
-          <div className="overflow-x-auto border border-border rounded-lg">
+          <div ref={componentRef} className="overflow-x-auto border border-border rounded-lg print:border-none print:shadow-none print:p-4 print:overflow-visible">
+            {/* Print Header only visible when printing */}
+            <div className="hidden print:block text-center mb-6">
+              <h2 className="text-xl font-bold uppercase mb-1">Sổ nhật ký chung</h2>
+              <p className="text-sm font-medium">
+                {fromDate && toDate ? `Từ ngày ${new Date(fromDate).toLocaleDateString('vi-VN')} đến ${new Date(toDate).toLocaleDateString('vi-VN')}` : `Tại ngày ${new Date().toLocaleDateString('vi-VN')}`}
+              </p>
+            </div>
             <table className="w-full text-sm text-left">
               <thead className="bg-[#E2E8F0] text-text-primary font-bold">
                 <tr>
