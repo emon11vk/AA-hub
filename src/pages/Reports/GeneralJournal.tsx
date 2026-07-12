@@ -152,7 +152,7 @@ export default function GeneralJournal() {
                   </tr>
                 ) : (
                   journalEntries.map((line, index) => (
-                    <tr key={index} className="hover:bg-bg-muted/50 transition-colors">
+                    <tr key={index} className="even:bg-gray-50 hover:bg-gray-100 transition-colors">
                       <td className="px-4 py-4 whitespace-nowrap font-medium text-text-primary">
                         {line.ngayHachToan}
                       </td>
