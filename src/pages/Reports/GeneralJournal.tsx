@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, LoaiChungTu } from '../../db/db';
-import { FileText, Filter, Search } from 'lucide-react';
+import { Filter, Search, Send } from 'lucide-react';
 
 export default function GeneralJournal() {
   const [fromDate, setFromDate] = useState<string>('');
@@ -25,20 +25,30 @@ export default function GeneralJournal() {
       filtered = filtered.filter(ct => ct.loaiChungTu === docType);
     }
 
-    // Flatten into journal lines
     const lines: any[] = [];
     filtered.forEach(ct => {
       ct.butToan.forEach(bt => {
         lines.push({
-          id: bt.id,
+          id: bt.id + '-no',
           ngayHachToan: ct.ngayHachToan,
           ngayChungTu: ct.ngayChungTu,
           soChungTu: ct.soChungTu,
           loaiChungTu: ct.loaiChungTu,
           dienGiai: bt.dienGiai || ct.dienGiaiChung,
-          tkNo: bt.tkNo,
-          tkCo: bt.tkCo,
-          soTien: bt.soTien,
+          tkDoiUng: bt.tkNo,
+          psNo: bt.soTien,
+          psCo: 0,
+        });
+        lines.push({
+          id: bt.id + '-co',
+          ngayHachToan: ct.ngayHachToan,
+          ngayChungTu: ct.ngayChungTu,
+          soChungTu: ct.soChungTu,
+          loaiChungTu: ct.loaiChungTu,
+          dienGiai: bt.dienGiai || ct.dienGiaiChung,
+          tkDoiUng: bt.tkCo,
+          psNo: 0,
+          psCo: bt.soTien,
         });
       });
     });
@@ -68,25 +78,26 @@ export default function GeneralJournal() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-primary/10 p-2 rounded-lg">
-          <FileText className="text-primary" size={24} />
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="card !p-0 overflow-hidden shadow-sm bg-white">
+        <div className="p-6 border-b border-border flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-serif font-bold text-text-primary">Sổ nhật ký chung</h1>
+            <p className="text-text-secondary text-sm mt-1">Danh sách hạch toán theo chứng từ</p>
+          </div>
+          <div className="flex gap-3">
+            <button className="bg-[#111827] hover:bg-gray-800 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+              <Search size={16} /> Tìm Kiếm
+            </button>
+            <button className="bg-[#b91c1c] hover:bg-red-800 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+              <Send size={16} /> Nộp Bài
+            </button>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Sổ Nhật Ký Chung</h1>
-          <p className="text-text-muted text-sm mt-1">Lịch sử chi tiết các giao dịch phát sinh</p>
-        </div>
-      </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-border p-4 mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter size={18} className="text-text-muted" />
-          <h2 className="font-semibold text-text-primary">Bộ lọc</h2>
-        </div>
-        <div className="flex flex-wrap gap-4">
+        <div className="p-6 border-b border-border flex flex-wrap gap-6">
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-text-secondary mb-1">Từ ngày</label>
+            <label className="block text-sm font-medium text-text-primary mb-2">Từ Ngày Hạch Toán</label>
             <input 
               type="date" 
               className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
@@ -95,7 +106,7 @@ export default function GeneralJournal() {
             />
           </div>
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-text-secondary mb-1">Đến ngày</label>
+            <label className="block text-sm font-medium text-text-primary mb-2">Đến Ngày Hạch Toán</label>
             <input 
               type="date" 
               className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
@@ -104,80 +115,71 @@ export default function GeneralJournal() {
             />
           </div>
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-text-secondary mb-1">Loại chứng từ</label>
+            <label className="block text-sm font-medium text-text-primary mb-2">Loại Chứng Từ</label>
             <select 
               className="w-full h-10 px-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
               value={docType}
               onChange={(e) => setDocType(e.target.value as any)}
             >
-              <option value="">Tất cả</option>
+              <option value="">Chọn loại chứng từ</option>
               {Object.entries(docTypeLabels).map(([val, label]) => (
                 <option key={val} value={val}>{label}</option>
               ))}
             </select>
           </div>
         </div>
-      </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-bg-muted text-text-secondary font-medium border-b border-border">
-              <tr>
-                <th className="px-4 py-3 whitespace-nowrap">Ngày HT</th>
-                <th className="px-4 py-3 whitespace-nowrap">Ngày CT</th>
-                <th className="px-4 py-3 whitespace-nowrap">Số CT</th>
-                <th className="px-4 py-3">Loại chứng từ</th>
-                <th className="px-4 py-3">Diễn giải</th>
-                <th className="px-4 py-3 whitespace-nowrap text-center">TK Nợ</th>
-                <th className="px-4 py-3 whitespace-nowrap text-center">TK Có</th>
-                <th className="px-4 py-3 whitespace-nowrap text-right">Số tiền</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {journalEntries.length === 0 ? (
+        <div className="p-6">
+          <div className="overflow-x-auto border border-border rounded-lg">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-[#E2E8F0] text-text-primary font-bold">
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-text-muted">
-                    <div className="flex flex-col items-center justify-center">
-                      <Search size={40} className="mb-3 opacity-20" />
-                      <p>Không tìm thấy dữ liệu hạch toán nào</p>
-                    </div>
-                  </td>
+                  <th className="px-4 py-4 whitespace-nowrap">Ngày hạch toán</th>
+                  <th className="px-4 py-4 whitespace-nowrap">Ngày chứng từ</th>
+                  <th className="px-4 py-4 whitespace-nowrap">Số chứng từ</th>
+                  <th className="px-4 py-4">Diễn giải</th>
+                  <th className="px-4 py-4 whitespace-nowrap text-center">TK đối ứng</th>
+                  <th className="px-4 py-4 whitespace-nowrap text-right">Phát sinh Nợ</th>
+                  <th className="px-4 py-4 whitespace-nowrap text-right">Phát sinh Có</th>
                 </tr>
-              ) : (
-                journalEntries.map((line, index) => (
-                  <tr key={index} className="hover:bg-bg-muted/50 transition-colors">
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {new Date(line.ngayHachToan).toLocaleDateString('vi-VN')}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {new Date(line.ngayChungTu).toLocaleDateString('vi-VN')}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-primary whitespace-nowrap">
-                      {line.soChungTu}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                        {docTypeLabels[line.loaiChungTu] || line.loaiChungTu}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-text-secondary min-w-[200px]">
-                      {line.dienGiai}
-                    </td>
-                    <td className="px-4 py-3 text-center font-mono">
-                      {line.tkNo || '-'}
-                    </td>
-                    <td className="px-4 py-3 text-center font-mono">
-                      {line.tkCo || '-'}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium">
-                      {formatCurrency(line.soTien)}
+              </thead>
+              <tbody className="divide-y divide-border">
+                {journalEntries.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-8 text-center text-text-muted">
+                      Không tìm thấy dữ liệu hạch toán nào
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  journalEntries.map((line, index) => (
+                    <tr key={index} className="hover:bg-bg-muted/50 transition-colors">
+                      <td className="px-4 py-4 whitespace-nowrap font-medium text-text-primary">
+                        {line.ngayHachToan}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap font-medium text-text-primary">
+                        {line.ngayChungTu}
+                      </td>
+                      <td className="px-4 py-4 font-bold text-text-primary whitespace-nowrap">
+                        {line.soChungTu}
+                      </td>
+                      <td className="px-4 py-4 text-text-secondary min-w-[200px]">
+                        {line.dienGiai}
+                      </td>
+                      <td className="px-4 py-4 text-center font-medium text-text-primary">
+                        {line.tkDoiUng || '-'}
+                      </td>
+                      <td className="px-4 py-4 text-right text-text-secondary tabular-nums">
+                        {line.psNo > 0 ? formatCurrency(line.psNo) : '0'}
+                      </td>
+                      <td className="px-4 py-4 text-right text-text-secondary tabular-nums">
+                        {line.psCo > 0 ? formatCurrency(line.psCo) : '0'}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

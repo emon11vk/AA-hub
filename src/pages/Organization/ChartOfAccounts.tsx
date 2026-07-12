@@ -14,7 +14,7 @@ export default function ChartOfAccounts() {
         <div className="p-6 border-b border-border bg-white flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BookOpen className="text-primary" size={28} />
-            <h1 className="text-2xl font-serif font-bold text-text-primary">Hệ thống Tài khoản (Thông tư 99/2025/TT-BTC)</h1>
+            <h1 className="text-2xl font-serif font-bold text-text-primary">Sổ chi tiết tài khoản (Thông tư 99/2025/TT-BTC)</h1>
           </div>
         </div>
 

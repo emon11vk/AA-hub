@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
       { id: 'thong-tin-doanh-nghiep', label: 'Thông tin Doanh Nghiệp', path: '/organization/info' },
       { id: 'nha-cung-cap', label: 'Nhà Cung cấp', path: '/organization/suppliers' },
       { id: 'khach-hang', label: 'Khách Hàng', path: '/organization/customers' },
-      { id: 'he-thong-tai-khoan', label: 'Hệ thống tài khoản', path: '/organization/accounts' },
+      { id: 'he-thong-tai-khoan', label: 'Số dư tài khoản', path: '/organization/accounts' },
     ],
   },
   {
