@@ -1,0 +1,181 @@
+import { useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db, ChungTu } from '../../db/db';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Plus, Search, Eye, Edit, FileText } from 'lucide-react';
+import { VoucherTemplate } from '../../components/PrintTemplate/VoucherTemplate';
+import React, { useRef } from 'react';
+
+export default function VoucherList() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isBank = location.pathname.includes('/bank');
+  const typeFilter = isBank ? 'BANK' : 'CASH';
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedVoucher, setSelectedVoucher] = useState<ChungTu | null>(null);
+  
+  const printRef = useRef<HTMLDivElement>(null);
+
+  const vouchers = useLiveQuery(
+    () => db.chungTu
+            .reverse()
+            .sortBy('ngayChungTu')
+  ) || [];
+
+  const filteredVouchers = vouchers.filter((v) => {
+    // Filter by Cash / Bank based on route
+    const isVoucherBank = v.loaiChungTu.includes('TIEN_GUI') || v.loaiChungTu.includes('UY_NHIEM') || v.loaiChungTu === 'GIAY_BAO';
+    if (typeFilter === 'BANK' && !isVoucherBank) return false;
+    if (typeFilter === 'CASH' && isVoucherBank) return false;
+
+    // Filter by search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      return (
+        v.soChungTu.toLowerCase().includes(term) ||
+        v.tenDoiTuong.toLowerCase().includes(term) ||
+        (v.lyDo && v.lyDo.toLowerCase().includes(term))
+      );
+    }
+    return true;
+  });
+
+  const handlePrint = (voucher: ChungTu) => {
+    setSelectedVoucher(voucher);
+    setTimeout(() => {
+      window.print();
+      setSelectedVoucher(null);
+    }, 100);
+  };
+
+  const getVoucherTypeLabel = (type: string) => {
+    switch(type) {
+      case 'PHIEU_THU': case 'PHIEU_THU_KH': return 'Phiếu thu';
+      case 'PHIEU_CHI': case 'PHIEU_CHI_NCC': return 'Phiếu chi';
+      case 'THU_TIEN_GUI': case 'THU_TIEN_GUI_KH': return 'Giấy báo có';
+      case 'UY_NHIEM_CHI': case 'UY_NHIEM_CHI_NCC': return 'Ủy nhiệm chi';
+      case 'GIAY_BAO': return 'Giấy báo';
+      default: return type;
+    }
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto space-y-6 relative">
+      <div className="card !p-0 overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-border bg-white flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <FileText className="text-primary" size={28} />
+            <h1 className="text-2xl font-serif font-bold text-text-primary">
+              {isBank ? 'Nghiệp vụ Tiền gửi ngân hàng' : 'Nghiệp vụ Tiền mặt'}
+            </h1>
+          </div>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => navigate(isBank ? '/vouchers/form/THU_TIEN_GUI' : '/vouchers/form/PHIEU_THU')}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
+            >
+              <Plus size={16} /> Thu tiền
+            </button>
+            <button 
+              onClick={() => navigate(isBank ? '/vouchers/form/UY_NHIEM_CHI' : '/vouchers/form/PHIEU_CHI')}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
+            >
+              <Plus size={16} /> Chi tiền
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 bg-white bg-opacity-50">
+          <div className="mb-6 flex gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input 
+                type="text" 
+                placeholder="Tìm theo số chứng từ, đối tượng, nội dung..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto border border-border rounded-lg bg-white">
+            <table className="w-full text-sm">
+              <thead className="bg-[#E2E8F0]">
+                <tr>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Ngày CT</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Số CT</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Loại CT</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Đối tượng</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Nội dung</th>
+                  <th className="py-3 px-4 text-right font-bold text-text-primary">Tổng tiền</th>
+                  <th className="py-3 px-4 text-center font-bold text-text-primary w-24">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredVouchers.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-text-secondary">
+                      Chưa có chứng từ nào.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredVouchers.map((v) => {
+                    const total = v.butToan.reduce((s, i) => s + Number(i.soTien), 0);
+                    return (
+                      <tr key={v.id} className="border-b border-border hover:bg-bg-muted transition-colors">
+                        <td className="py-3 px-4">{v.ngayChungTu}</td>
+                        <td className="py-3 px-4 font-bold text-primary">{v.soChungTu}</td>
+                        <td className="py-3 px-4">
+                          <span className="px-2 py-1 bg-gray-100 rounded text-xs">{getVoucherTypeLabel(v.loaiChungTu)}</span>
+                        </td>
+                        <td className="py-3 px-4 font-medium truncate max-w-[200px]">{v.tenDoiTuong}</td>
+                        <td className="py-3 px-4 text-text-secondary truncate max-w-[250px]">{v.lyDo}</td>
+                        <td className="py-3 px-4 text-right font-bold text-text-primary tabular-nums">
+                          {total > 0 ? total.toLocaleString('vi-VN') : '-'}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <div className="flex justify-center gap-2">
+                            <button onClick={() => handlePrint(v)} className="text-gray-500 hover:text-primary p-1" title="In/Xem chứng từ">
+                              <Eye size={16} />
+                            </button>
+                            <button onClick={() => navigate(`/vouchers/form/${v.loaiChungTu}/${v.id}`)} className="text-gray-500 hover:text-blue-600 p-1" title="Sửa chứng từ">
+                              <Edit size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden Print Template */}
+      <div className="hidden print:block absolute top-0 left-0 w-full bg-white z-50">
+        {selectedVoucher && <VoucherTemplate voucher={selectedVoucher} ref={printRef} />}
+      </div>
+      
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print\\:block, .print\\:block * {
+            visibility: visible;
+          }
+          .print\\:block {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
