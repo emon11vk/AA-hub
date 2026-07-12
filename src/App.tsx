@@ -13,7 +13,7 @@ import IncomeStatement from './pages/Reports/IncomeStatement';
 import BalanceSheet from './pages/Reports/BalanceSheet';
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/AA-hub">
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
