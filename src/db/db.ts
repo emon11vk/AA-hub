@@ -35,6 +35,15 @@ export interface KhachHang {
   daVoHieuHoa?: boolean;
 }
 
+export interface NganHang {
+  id: string;
+  ma: string;
+  ten: string;
+  soTaiKhoan: string;
+  chiNhanh: string;
+  daVoHieuHoa?: boolean;
+}
+
 export interface TaiKhoanKeToan {
   id: string;
   soHieu: string;
@@ -103,19 +112,23 @@ export class AccountingDB extends Dexie {
   hoSoDoanhNghiep!: Table<HoSoDoanhNghiep>;
   nhaCungCap!: Table<NhaCungCap>;
   khachHang!: Table<KhachHang>;
+  nganHang!: Table<NganHang>;
   taiKhoanKeToan!: Table<TaiKhoanKeToan>;
   chungTu!: Table<ChungTu>;
   thanhToan!: Table<ThanhToan>;
 
   constructor() {
     super('AccountingDB');
-    this.version(2).stores({
+    this.version(3).stores({
       hoSoDoanhNghiep: 'id, trangThai',
       nhaCungCap: 'id, ma',
       khachHang: 'id, ma',
+      nganHang: 'id, ma',
       taiKhoanKeToan: 'id, soHieu',
       chungTu: 'id, soChungTu, loaiChungTu, ngayHachToan',
       thanhToan: 'id, chungTuThuChiId, chungTuHoaDonId'
+    }).upgrade(trans => {
+      // Upgrade logic if needed
     });
     
     this.on('populate', () => {

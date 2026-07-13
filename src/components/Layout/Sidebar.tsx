@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
       { id: 'thong-tin-doanh-nghiep', label: 'Thông tin Doanh Nghiệp', path: '/organization/info' },
       { id: 'nha-cung-cap', label: 'Nhà Cung cấp', path: '/organization/suppliers' },
       { id: 'khach-hang', label: 'Khách Hàng', path: '/organization/customers' },
+      { id: 'ngan-hang', label: 'Ngân Hàng', path: '/organization/banks' },
       { id: 'he-thong-tai-khoan', label: 'Sổ chi tiết', path: '/organization/accounts' },
     ],
   },

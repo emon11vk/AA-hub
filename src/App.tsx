@@ -5,6 +5,7 @@ import ChartOfAccounts from './pages/Organization/ChartOfAccounts';
 import BusinessInfo from './pages/Organization/BusinessInfo';
 import Suppliers from './pages/Organization/Suppliers';
 import Customers from './pages/Organization/Customers';
+import Banks from './pages/Organization/Banks';
 import VoucherList from './pages/Vouchers/VoucherList';
 import VoucherForm from './pages/Vouchers/VoucherForm';
 import GeneralJournal from './pages/Reports/GeneralJournal';
@@ -21,6 +22,7 @@ function App() {
             <Route path="info" element={<BusinessInfo />} />
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="customers" element={<Customers />} />
+            <Route path="banks" element={<Banks />} />
             <Route path="accounts" element={<ChartOfAccounts />} />
             <Route index element={<Navigate to="info" replace />} />
           </Route>
