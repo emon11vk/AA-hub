@@ -91,7 +91,7 @@ export default function Suppliers() {
           <h1 className="text-2xl font-serif font-bold text-text-primary">Danh mục Nhà cung cấp</h1>
         </div>
 
-        <div className="p-6 bg-white bg-opacity-50">
+        <div className="p-4 sm:p-6 bg-white bg-opacity-50">
           <form onSubmit={handleSubmit(onSubmit)} className="bg-bg-muted p-5 rounded-xl border border-border">
             <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
               <Plus size={16} /> {editingId ? 'Chỉnh sửa nhà cung cấp' : 'Thêm nhà cung cấp mới'}

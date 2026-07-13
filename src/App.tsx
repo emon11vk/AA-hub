@@ -13,12 +13,22 @@ import GeneralJournal from './pages/Reports/GeneralJournal';
 import TrialBalance from './pages/Reports/TrialBalance';
 import IncomeStatement from './pages/Reports/IncomeStatement';
 import BalanceSheet from './pages/Reports/BalanceSheet';
+import { useAuthStore } from './store/authStore';
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuthStore();
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/organization/info" replace />} />
           <Route path="organization">
             <Route path="info" element={<BusinessInfo />} />

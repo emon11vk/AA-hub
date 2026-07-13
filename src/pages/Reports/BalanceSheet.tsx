@@ -121,8 +121,8 @@ export default function BalanceSheet() {
   const isBalanced = reportData['280'] === reportData['440'];
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-4">
         <div className="flex items-center gap-3">
           <div className="border border-primary bg-transparent p-2 rounded-lg">
             <FileBarChart className="text-primary" size={24} />
@@ -133,7 +133,7 @@ export default function BalanceSheet() {
           </div>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {!isBalanced ? (
             <div className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg border border-red-200">
               <AlertTriangle size={18} />
@@ -185,8 +185,8 @@ export default function BalanceSheet() {
 
       <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         {/* Printable Area */}
-        <div ref={componentRef} className="p-8 bg-white print:p-0">
-          <div className="text-center mb-8">
+        <div ref={componentRef} className="p-4 sm:p-8 bg-white print:p-0 overflow-x-auto">
+          <div className="text-center mb-8 min-w-[600px]">
             <h2 className="text-xl font-bold uppercase mb-1">Báo cáo tình hình tài chính</h2>
             <p className="text-sm italic text-gray-600 mb-2">(Áp dụng cho doanh nghiệp đáp ứng giả định hoạt động liên tục)</p>
             <p className="text-sm font-medium">Tại ngày {new Date().toLocaleDateString('vi-VN')}</p>
@@ -366,7 +366,7 @@ export default function BalanceSheet() {
           </table>
 
           {/* Signature Block */}
-          <div className="flex justify-between mt-12 px-8">
+          <div className="flex justify-between mt-12 px-4 sm:px-8 min-w-[600px]">
             <div className="text-center">
               <p className="font-bold">Người lập biểu</p>
               <p className="text-sm italic">(Ký, họ tên)</p>

@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 
 const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+
+  const login = useAuthStore((state) => state.login);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     // Simulate login delay
     setTimeout(() => {
+      login({
+        id: 'u1',
+        fullName: 'Nguyễn Văn A',
+        class: 'Lớp 10A1',
+      });
       setIsLoading(false);
       navigate('/');
     }, 800);
@@ -19,7 +27,7 @@ const Login = () => {
   return (
     <div className="min-h-screen w-full flex bg-white font-sans">
       {/* Left Form Section */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 relative z-10">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-12 lg:px-24 xl:px-32 relative z-10">
 
         {/* Logo/Brand Area */}
         <div className="mb-12">

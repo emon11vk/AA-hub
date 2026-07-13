@@ -113,14 +113,14 @@ export default function GeneralJournal() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-12">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-12">
       <div className="card !p-0 overflow-hidden shadow-sm bg-white">
-        <div className="p-6 border-b border-border flex items-center justify-between">
+        <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-serif font-bold text-text-primary">Sổ nhật ký chung</h1>
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-text-primary">Sổ nhật ký chung</h1>
             <p className="text-text-secondary text-sm mt-1">Danh sách hạch toán theo chứng từ</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <button className="bg-[#111827] hover:bg-gray-800 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
               <Search size={16} /> Tìm Kiếm
             </button>
@@ -136,8 +136,8 @@ export default function GeneralJournal() {
           </div>
         </div>
 
-        <div className="p-6 border-b border-border flex flex-wrap gap-6">
-          <div className="flex-1 min-w-[200px]">
+        <div className="p-4 sm:p-6 border-b border-border flex flex-wrap gap-4 sm:gap-6">
+          <div className="flex-1 min-w-[140px] sm:min-w-[200px]">
             <label className="block text-sm font-medium text-text-primary mb-2">Từ Ngày Hạch Toán</label>
             <input 
               type="date" 
@@ -170,8 +170,8 @@ export default function GeneralJournal() {
           </div>
         </div>
 
-        <div className="p-6">
-          <div ref={componentRef} className="overflow-x-auto border border-border rounded-lg print:border-none print:shadow-none print:p-4 print:overflow-visible">
+        <div className="p-0 sm:p-6">
+          <div ref={componentRef} className="overflow-x-auto sm:border sm:border-border sm:rounded-lg print:border-none print:shadow-none print:p-4 print:overflow-visible">
             {/* Print Header only visible when printing */}
             <div className="hidden print:block text-center mb-6">
               <h2 className="text-xl font-bold uppercase mb-1">Sổ nhật ký chung</h2>
@@ -243,8 +243,8 @@ export default function GeneralJournal() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <span className="text-sm text-text-secondary">
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4 p-4 sm:p-0">
+              <span className="text-sm text-text-secondary text-center sm:text-left">
                 Hiển thị {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, journalEntries.length)} trong tổng số {journalEntries.length} bản ghi
               </span>
               <div className="flex gap-2">

@@ -13,13 +13,9 @@ interface AuthState {
   updateProfile: (updates: Partial<User>) => void;
 }
 
-// Mocking an initially logged-in user according to the requirements
+// Initial state should not be logged in
 export const useAuthStore = create<AuthState>((set) => ({
-  user: {
-    id: 'u1',
-    fullName: 'Nguyễn Văn A',
-    class: 'Lớp 10A1',
-  },
+  user: null,
   login: (user) => set({ user }),
   logout: () => set({ user: null }),
   updateProfile: (updates) => set((state) => ({

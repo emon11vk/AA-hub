@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Menu, Building2, Landmark, Wallet, BarChart2,
-  ChevronRight, DollarSign, LayoutDashboard
+  ChevronRight, DollarSign, LayoutDashboard, X
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -167,7 +167,13 @@ const MenuItem = ({
   );
 };
 
-export default function Sidebar() {
+export default function Sidebar({
+  isMobileOpen = false,
+  onCloseMobile
+}: {
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
+}) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
@@ -190,22 +196,37 @@ export default function Sidebar() {
   }, [location.pathname]);
 
   return (
-    <aside className={`bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen sticky top-0 z-20 print:hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'w-[72px]' : 'w-[280px]'}`}>
-      <div className={`h-20 flex items-center border-b border-gray-200 transition-all duration-300 ${isCollapsed ? 'justify-center px-0' : 'px-5'}`}>
-        {!isCollapsed && <img src="/faasa-logo-white.png" alt="FAASA Logo" className="w-10 h-10 object-contain mr-3 shrink-0" />}
-        {!isCollapsed && (
-          <h1 className="text-[14px] font-bold text-gray-900 flex-1 font-sans tracking-tight leading-tight whitespace-nowrap overflow-hidden">
-            Accounting &<br />Auditing Hub
-          </h1>
-        )}
-        <button 
-          onClick={() => setIsCollapsed(!isCollapsed)} 
-          className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 transition-colors shrink-0"
-          title={isCollapsed ? "Mở rộng" : "Thu gọn"}
-        >
-          <Menu size={20} />
-        </button>
-      </div>
+    <>
+      {/* Mobile Overlay */}
+      <div 
+        className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={onCloseMobile}
+      />
+
+      <aside className={`bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen fixed md:sticky top-0 z-50 md:z-20 print:hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'w-[72px]' : 'w-[280px]'} ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <div className={`h-20 flex items-center border-b border-gray-200 transition-all duration-300 ${isCollapsed ? 'justify-center px-0' : 'px-5'}`}>
+          {!isCollapsed && <img src="/faasa-logo-white.png" alt="FAASA Logo" className="w-10 h-10 object-contain mr-3 shrink-0" />}
+          {!isCollapsed && (
+            <h1 className="text-[14px] font-bold text-gray-900 flex-1 font-sans tracking-tight leading-tight whitespace-nowrap overflow-hidden">
+              Accounting &<br />Auditing Hub
+            </h1>
+          )}
+          
+          <button 
+            onClick={() => setIsCollapsed(!isCollapsed)} 
+            className="hidden md:block p-1.5 hover:bg-gray-100 rounded-md text-gray-500 transition-colors shrink-0"
+            title={isCollapsed ? "Mở rộng" : "Thu gọn"}
+          >
+            <Menu size={20} />
+          </button>
+          
+          <button 
+            onClick={onCloseMobile} 
+            className="md:hidden p-1.5 hover:bg-gray-100 rounded-md text-gray-500 transition-colors shrink-0"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
       <nav className="flex-1 overflow-y-auto py-4 px-0 overflow-x-hidden">
         {navItems.map((item) => (
@@ -228,5 +249,6 @@ export default function Sidebar() {
         {!isCollapsed && <div className="text-gray-400 text-xs whitespace-nowrap">v1.0</div>}
       </div>
     </aside>
+    </>
   );
 }

@@ -74,25 +74,25 @@ export default function VoucherList() {
   return (
     <div className="max-w-7xl mx-auto space-y-6 relative print:static print:max-w-none print:w-full print:m-0 print:p-0 print:space-y-0">
       <div className="card !p-0 overflow-hidden shadow-sm print:hidden">
-        <div className="p-6 border-b border-border bg-white flex items-center justify-between">
+        <div className="p-4 sm:p-6 border-b border-border bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <FileText className="text-primary" size={28} />
-            <h1 className="text-2xl font-serif font-bold text-text-primary">
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-text-primary">
               Tiền
             </h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 w-full sm:w-auto">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
+              className="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Plus size={16} /> Tạo chứng từ
             </button>
           </div>
         </div>
 
-        <div className="p-6 bg-white bg-opacity-50">
-          <div className="mb-6 flex gap-4">
+        <div className="p-4 sm:p-6 bg-white bg-opacity-50">
+          <div className="mb-4 sm:mb-6 flex gap-4">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input 
@@ -162,16 +162,16 @@ export default function VoucherList() {
 
       {/* Modal Tạo Chứng Từ */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
-            <div className="flex justify-between items-center p-6 border-b border-border">
-              <h2 className="text-xl font-bold text-text-primary">Tạo chứng từ mới</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-full flex flex-col">
+            <div className="flex justify-between items-center p-4 sm:p-6 border-b border-border shrink-0">
+              <h2 className="text-lg sm:text-xl font-bold text-text-primary">Tạo chứng từ mới</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-text-secondary hover:text-text-primary">
                 <X size={24} />
               </button>
             </div>
             
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">Quỹ (Loại tiền)</label>
                 <select 

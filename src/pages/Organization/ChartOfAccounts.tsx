@@ -90,7 +90,7 @@ export default function ChartOfAccounts() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="card !p-0 overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-border bg-white flex items-center justify-between">
+        <div className="p-4 sm:p-6 border-b border-border bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <BookOpen className="text-primary" size={28} />
             <h1 className="text-2xl font-serif font-bold text-text-primary">Sổ chi tiết tài khoản (Thông tư 99/2025/TT-BTC)</h1>
@@ -110,7 +110,7 @@ export default function ChartOfAccounts() {
           </div>
         </div>
 
-        <div className="p-6 bg-white bg-opacity-50">
+        <div className="p-4 sm:p-6 bg-white bg-opacity-50">
           <div className="flex justify-end mb-4">
             <button 
               onClick={handleOpenAddModal}
@@ -213,16 +213,16 @@ export default function ChartOfAccounts() {
 
       {/* Modal Thêm Mới Tài Khoản */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
-            <div className="flex justify-between items-center p-6 border-b border-border">
-              <h2 className="text-xl font-bold text-text-primary">{editingAccount ? 'Chỉnh sửa tài khoản' : 'Thêm tài khoản mới'}</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-full flex flex-col">
+            <div className="flex justify-between items-center p-4 sm:p-6 border-b border-border shrink-0">
+              <h2 className="text-lg sm:text-xl font-bold text-text-primary">{editingAccount ? 'Chỉnh sửa tài khoản' : 'Thêm tài khoản mới'}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-text-secondary hover:text-text-primary">
                 <X size={24} />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit(onSaveAccount)} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit(onSaveAccount)} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">Số hiệu tài khoản</label>
                 <input 

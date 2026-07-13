@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, User, ChevronDown, Plus } from 'lucide-react';
+import { Send, User, ChevronDown, Plus, Menu } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
-export default function Header() {
+export default function Header({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   
@@ -35,21 +35,29 @@ export default function Header() {
   };
 
   return (
-    <header className="h-20 bg-white border-b border-border flex items-center justify-end px-6 shrink-0 print:hidden relative z-50">
+    <header className="h-16 sm:h-20 bg-white border-b border-border flex items-center justify-between sm:justify-end px-4 sm:px-6 shrink-0 print:hidden relative z-40">
+      {/* Nút Menu Mobile (Trái) */}
+      <button 
+        onClick={onOpenMobileMenu}
+        className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors"
+      >
+        <Menu size={24} />
+      </button>
+
       {/* Giữa (Logo) */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-4 whitespace-nowrap pointer-events-none">
-        <div className="w-[76px] h-[76px] flex items-center justify-center shrink-0 pointer-events-auto">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-4 whitespace-nowrap pointer-events-none">
+        <div className="w-[48px] h-[48px] sm:w-[76px] sm:h-[76px] flex items-center justify-center shrink-0 pointer-events-auto">
           <img src="/ftu-logo-white.png" alt="FTU Logo" className="w-full h-full object-contain" />
         </div>
-        <div className="font-serif pointer-events-auto">
+        <div className="font-serif pointer-events-auto hidden md:block">
           <div className="text-primary font-bold text-lg tracking-wide uppercase">TRƯỜNG ĐẠI HỌC NGOẠI THƯƠNG</div>
           <div className="text-text-secondary text-sm tracking-widest uppercase">Foreign Trade University</div>
         </div>
       </div>
       
       {/* Phải (Công cụ) */}
-      <div className="flex items-center gap-4 text-text-primary pl-6">
-        <button className="flex items-center gap-2 font-medium hover:text-primary transition-colors">
+      <div className="flex items-center gap-2 sm:gap-4 text-text-primary">
+        <button className="hidden sm:flex items-center gap-2 font-medium hover:text-primary transition-colors">
           <div className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-[10px]">★</div>
           Vn
         </button>
@@ -57,7 +65,7 @@ export default function Header() {
         <div className="relative" ref={profileRef}>
           <button 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-2 hover:bg-bg-muted p-1 pr-2 rounded-full transition-colors"
+            className="flex items-center gap-1 sm:gap-2 hover:bg-bg-muted p-1 pr-1 sm:pr-2 rounded-full transition-colors"
           >
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white">
               <User size={16} />
@@ -66,18 +74,19 @@ export default function Header() {
           </button>
 
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-[500px] bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 p-6 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <User size={24} className="text-primary" />
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-[500px] max-w-full bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 p-4 sm:p-6 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="flex items-center gap-3 mb-4 sm:mb-6 pb-4 border-b border-gray-100">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                  <User size={20} className="text-primary sm:hidden" />
+                  <User size={24} className="text-primary hidden sm:block" />
                 </div>
                 <div>
-                  <h3 className="text-[18px] font-bold text-gray-800">Hồ sơ cá nhân</h3>
-                  <p className="text-sm text-gray-500">Cập nhật thông tin tài khoản của bạn</p>
+                  <h3 className="text-base sm:text-[18px] font-bold text-gray-800">Hồ sơ cá nhân</h3>
+                  <p className="text-xs sm:text-sm text-gray-500">Cập nhật thông tin tài khoản của bạn</p>
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-x-6 gap-y-5 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 sm:gap-y-5 mb-6">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-semibold text-gray-700">Họ và tên học sinh</label>
                   <input 
