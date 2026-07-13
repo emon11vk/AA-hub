@@ -107,7 +107,7 @@ const Login = () => {
           </form>
 
           <div className="mt-8 text-center text-sm text-gray-500">
-            Cần hỗ trợ? Liên hệ <a href="mailto:ftulab@ftu.edu.vn" className="font-medium text-[#990000] hover:underline">thult@ftu.edu.vn</a>
+            Cần hỗ trợ? Liên hệ <a href="mailto:ftulab@ftu.edu.vn" className="font-medium text-[#990000] hover:underline">ftulab@ftu.edu.vn</a>
           </div>
         </div>
       </div>
