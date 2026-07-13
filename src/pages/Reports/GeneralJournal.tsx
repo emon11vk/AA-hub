@@ -13,7 +13,7 @@ export default function GeneralJournal() {
 
   const componentRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
+    contentRef: componentRef,
     documentTitle: 'So-Nhat-Ky-Chung',
   });
 

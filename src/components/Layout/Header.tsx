@@ -4,8 +4,8 @@ export default function Header() {
   return (
     <header className="h-20 bg-white border-b border-border flex items-center justify-between px-6 shrink-0">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl">
-          FTU
+        <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center shrink-0 bg-white shadow-sm border border-gray-100">
+          <img src="/ftu-logo.png" alt="FTU Logo" className="w-full h-full object-contain p-0.5" />
         </div>
         <div className="font-serif">
           <div className="text-primary font-bold text-lg tracking-wide uppercase">TRƯỜNG ĐẠI HỌC NGOẠI THƯƠNG</div>

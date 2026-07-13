@@ -10,7 +10,7 @@ export default function IncomeStatement() {
 
   const componentRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
+    contentRef: componentRef,
     documentTitle: 'Bao-Cao-Ket-Qua-Hoat-Dong-Kinh-Doanh',
   });
 
@@ -96,8 +96,8 @@ export default function IncomeStatement() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="bg-green-500/10 p-2 rounded-lg">
-            <TrendingUp className="text-green-600" size={24} />
+          <div className="border border-primary bg-transparent p-2 rounded-lg">
+            <TrendingUp className="text-primary" size={24} />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-text-primary">Báo Cáo Kết Quả Hoạt Động Kinh Doanh</h1>

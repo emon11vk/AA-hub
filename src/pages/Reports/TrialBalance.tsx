@@ -10,7 +10,7 @@ export default function TrialBalance() {
 
   const componentRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
+    contentRef: componentRef,
     documentTitle: 'Bang-Can-Doi-So-Phat-Sinh',
   });
 
@@ -111,8 +111,8 @@ export default function TrialBalance() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="bg-blue-500/10 p-2 rounded-lg">
-            <Calculator className="text-blue-600" size={24} />
+          <div className="border border-primary bg-transparent p-2 rounded-lg">
+            <Calculator className="text-primary" size={24} />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-text-primary">Bảng Cân Đối Số Phát Sinh</h1>

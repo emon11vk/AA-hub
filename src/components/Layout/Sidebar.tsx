@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Menu, Building2, Landmark, Wallet, BarChart2, 
-  ChevronDown, ChevronRight, DollarSign
+  ChevronRight, DollarSign
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -81,19 +81,24 @@ const MenuItem = ({ item, level = 0 }: { item: NavItem; level?: number }) => {
         >
           {item.icon && <item.icon size={18} className={`mr-2.5 shrink-0 ${isParentActive ? 'text-[#b91c1c]' : 'text-gray-400'}`} />}
           <span className="flex-1 text-left text-[14px]">{item.label}</span>
-          {isOpen ? (
-            <ChevronDown size={16} className="text-gray-400 shrink-0" />
-          ) : (
-            <ChevronRight size={16} className="text-gray-400 shrink-0" />
-          )}
+          <ChevronRight 
+            size={16} 
+            className={`text-gray-400 shrink-0 transition-transform duration-200 ease-in-out ${isOpen ? 'rotate-90' : ''}`} 
+          />
         </button>
-        {isOpen && (
-          <div className="flex flex-col pb-1">
-            {item.children!.map((child) => (
-              <MenuItem key={child.id} item={child} level={level + 1} />
-            ))}
+        <div 
+          className={`grid transition-all duration-200 ease-in-out ${
+            isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="flex flex-col pb-1">
+              {item.children!.map((child) => (
+                <MenuItem key={child.id} item={child} level={level + 1} />
+              ))}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     );
   }
