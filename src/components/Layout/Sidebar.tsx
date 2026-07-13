@@ -15,12 +15,6 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    id: 'tong-quan',
-    label: 'Tổng Quan',
-    path: '/',
-    icon: LayoutDashboard,
-  },
-  {
     id: 'thong-tin-to-chuc',
     label: 'Thông Tin Tổ Chức',
     icon: Building2,

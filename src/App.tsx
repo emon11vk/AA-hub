@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
-import Dashboard from './pages/Dashboard';
 import ChartOfAccounts from './pages/Organization/ChartOfAccounts';
 import BusinessInfo from './pages/Organization/BusinessInfo';
 import Suppliers from './pages/Organization/Suppliers';
@@ -17,7 +16,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
+          <Route index element={<Navigate to="/organization/info" replace />} />
           <Route path="organization">
             <Route path="info" element={<BusinessInfo />} />
             <Route path="suppliers" element={<Suppliers />} />
