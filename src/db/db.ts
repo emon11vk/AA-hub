@@ -92,21 +92,30 @@ export interface ChungTu {
   butToan: ButToan[]; // Can store directly inside or separate table. Since indexedDb can store objects, let's keep it here for easy retrieval
 }
 
+export interface ThanhToan {
+  id: string;
+  chungTuThuChiId: string;
+  chungTuHoaDonId: string;
+  soTienThanhToan: number;
+}
+
 export class AccountingDB extends Dexie {
   hoSoDoanhNghiep!: Table<HoSoDoanhNghiep>;
   nhaCungCap!: Table<NhaCungCap>;
   khachHang!: Table<KhachHang>;
   taiKhoanKeToan!: Table<TaiKhoanKeToan>;
   chungTu!: Table<ChungTu>;
+  thanhToan!: Table<ThanhToan>;
 
   constructor() {
     super('AccountingDB');
-    this.version(1).stores({
+    this.version(2).stores({
       hoSoDoanhNghiep: 'id, trangThai',
       nhaCungCap: 'id, ma',
       khachHang: 'id, ma',
       taiKhoanKeToan: 'id, soHieu',
-      chungTu: 'id, soChungTu, loaiChungTu, ngayHachToan'
+      chungTu: 'id, soChungTu, loaiChungTu, ngayHachToan',
+      thanhToan: 'id, chungTuThuChiId, chungTuHoaDonId'
     });
     
     this.on('populate', () => {

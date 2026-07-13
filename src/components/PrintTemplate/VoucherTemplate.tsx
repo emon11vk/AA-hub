@@ -21,7 +21,12 @@ export const VoucherTemplate = React.forwardRef<HTMLDivElement, VoucherTemplateP
     const totalAmount = voucher.butToan.reduce((sum, item) => sum + Number(item.soTien), 0);
 
     return (
-      <div ref={ref} className="bg-white p-8 font-serif text-black max-w-4xl mx-auto border border-gray-300 shadow-sm">
+      <div ref={ref} className="bg-white p-8 font-serif text-black w-full max-w-[210mm] min-h-[297mm] mx-auto border border-gray-300 shadow-sm print:border-none print:shadow-none print:max-w-none print:w-full print:m-0 print:p-0">
+        <style>{`
+          @media print {
+            @page { size: A4 portrait; margin: 20mm; }
+          }
+        `}</style>
         <div className="flex justify-between items-start mb-6">
           <div>
             <div className="font-bold uppercase">{profile?.tenDN || 'CÔNG TY TNHH ABC'}</div>

@@ -2,7 +2,7 @@
 
 Dự án Hệ thống Kế toán - Bài tập/Thực hành kế toán dành cho sinh viên FTU.
 
-## 🚀 Giới thiệu
+##  Giới thiệu
 
 Đây là một ứng dụng Web mô phỏng Hệ thống Kế toán, cung cấp các tính năng quản lý danh mục (tài khoản, khách hàng, nhà cung cấp), lập chứng từ, và xem các báo cáo tài chính cơ bản.
 

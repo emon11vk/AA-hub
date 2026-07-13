@@ -7,6 +7,7 @@ import Suppliers from './pages/Organization/Suppliers';
 import Customers from './pages/Organization/Customers';
 import VoucherList from './pages/Vouchers/VoucherList';
 import VoucherForm from './pages/Vouchers/VoucherForm';
+import DebtPaymentForm from './pages/Vouchers/DebtPaymentForm';
 import GeneralJournal from './pages/Reports/GeneralJournal';
 import TrialBalance from './pages/Reports/TrialBalance';
 import IncomeStatement from './pages/Reports/IncomeStatement';
@@ -26,6 +27,10 @@ function App() {
           </Route>
           <Route path="vouchers">
             <Route index element={<VoucherList />} />
+            <Route path="form/PHIEU_THU_KH/:id?" element={<DebtPaymentForm />} />
+            <Route path="form/PHIEU_CHI_NCC/:id?" element={<DebtPaymentForm />} />
+            <Route path="form/THU_TIEN_GUI_KH/:id?" element={<DebtPaymentForm />} />
+            <Route path="form/UY_NHIEM_CHI_NCC/:id?" element={<DebtPaymentForm />} />
             <Route path="form/:type/:id?" element={<VoucherForm />} />
           </Route>
           <Route path="reports">

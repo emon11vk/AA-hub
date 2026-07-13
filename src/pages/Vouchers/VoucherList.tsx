@@ -48,10 +48,14 @@ export default function VoucherList() {
     let route = '';
     if (fundType === 'CASH') {
       if (actionType === 'RECEIPT') route = '/vouchers/form/PHIEU_THU';
-      else route = '/vouchers/form/PHIEU_CHI';
+      else if (actionType === 'RECEIPT_CUSTOMER') route = '/vouchers/form/PHIEU_THU_KH';
+      else if (actionType === 'PAYMENT') route = '/vouchers/form/PHIEU_CHI';
+      else if (actionType === 'PAYMENT_SUPPLIER') route = '/vouchers/form/PHIEU_CHI_NCC';
     } else {
       if (actionType === 'RECEIPT') route = '/vouchers/form/THU_TIEN_GUI';
-      else route = '/vouchers/form/UY_NHIEM_CHI';
+      else if (actionType === 'RECEIPT_CUSTOMER') route = '/vouchers/form/THU_TIEN_GUI_KH';
+      else if (actionType === 'PAYMENT') route = '/vouchers/form/UY_NHIEM_CHI';
+      else if (actionType === 'PAYMENT_SUPPLIER') route = '/vouchers/form/UY_NHIEM_CHI_NCC';
     }
     navigate(route);
   };
@@ -68,8 +72,8 @@ export default function VoucherList() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 relative">
-      <div className="card !p-0 overflow-hidden shadow-sm">
+    <div className="max-w-7xl mx-auto space-y-6 relative print:static print:max-w-none print:w-full print:m-0 print:p-0 print:space-y-0">
+      <div className="card !p-0 overflow-hidden shadow-sm print:hidden">
         <div className="p-6 border-b border-border bg-white flex items-center justify-between">
           <div className="flex items-center gap-3">
             <FileText className="text-primary" size={28} />
@@ -188,7 +192,9 @@ export default function VoucherList() {
                   className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="RECEIPT">Thu tiền</option>
+                  <option value="RECEIPT_CUSTOMER">Thu tiền Khách hàng</option>
                   <option value="PAYMENT">Chi tiền</option>
+                  <option value="PAYMENT_SUPPLIER">Chi tiền Nhà cung cấp</option>
                 </select>
               </div>
 
@@ -212,26 +218,9 @@ export default function VoucherList() {
       )}
 
       {/* Hidden Print Template */}
-      <div className="hidden print:block absolute top-0 left-0 w-full bg-white z-50">
+      <div className="hidden print:block print:w-full print:m-0 print:p-0 bg-white">
         {selectedVoucher && <VoucherTemplate voucher={selectedVoucher} ref={printRef} />}
       </div>
-      
-      <style>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          .print\\:block, .print\\:block * {
-            visibility: visible;
-          }
-          .print\\:block {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
-        }
-      `}</style>
     </div>
   );
 }
