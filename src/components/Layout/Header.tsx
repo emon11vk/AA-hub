@@ -74,7 +74,7 @@ export default function Header({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
           </button>
 
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-[500px] max-w-full bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 p-4 sm:p-6 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-[500px] bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 p-4 sm:p-6 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
               <div className="flex items-center gap-3 mb-4 sm:mb-6 pb-4 border-b border-gray-100">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                   <User size={20} className="text-primary sm:hidden" />
