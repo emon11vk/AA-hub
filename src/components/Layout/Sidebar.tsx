@@ -127,7 +127,7 @@ const MenuItem = ({ item, level = 0 }: { item: NavItem; level?: number }) => {
 export default function Sidebar() {
   return (
     <aside className="w-[280px] bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen sticky top-0 z-20 print:hidden">
-      <div className="h-16 flex items-center px-5 border-b border-gray-200">
+      <div className="h-20 flex items-center px-5 border-b border-gray-200">
         <img src="/faasa-logo.png" alt="FAASA Logo" className="w-10 h-10 object-contain mr-3 shrink-0" />
         <h1 className="text-[14px] font-bold text-gray-900 flex-1 font-sans tracking-tight leading-tight">
           Accounting &<br />Auditing Hub
