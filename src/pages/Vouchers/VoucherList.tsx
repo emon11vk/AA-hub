@@ -78,7 +78,7 @@ export default function VoucherList() {
           <div className="flex items-center gap-3">
             <FileText className="text-primary" size={28} />
             <h1 className="text-2xl font-serif font-bold text-text-primary">
-              Nghiệp vụ Tiền (Cốt lõi)
+              Tiền
             </h1>
           </div>
           <div className="flex gap-3">

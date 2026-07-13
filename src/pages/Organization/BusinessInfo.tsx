@@ -27,8 +27,8 @@ export default function BusinessInfo() {
         tenDN: profile.tenDN,
         diaChi: profile.diaChi,
         maSoThue: profile.maSoThue,
-        hoTenSinhVien: profile.hoTenSinhVien,
-        lop: profile.lop || user?.class || '',
+        hoTenSinhVien: user?.fullName || profile.hoTenSinhVien,
+        lop: user?.class || profile.lop || '',
       });
     } else if (user) {
       reset({

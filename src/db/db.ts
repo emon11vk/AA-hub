@@ -26,6 +26,14 @@ export interface NhaCungCap {
   daVoHieuHoa?: boolean;
 }
 
+export interface NhanVien {
+  id: string;
+  ma: string;
+  ten: string;
+  phongBan: string;
+  viTri: string;
+}
+
 export interface KhachHang {
   id: string;
   ma: string;
@@ -116,17 +124,19 @@ export class AccountingDB extends Dexie {
   taiKhoanKeToan!: Table<TaiKhoanKeToan>;
   chungTu!: Table<ChungTu>;
   thanhToan!: Table<ThanhToan>;
+  nhanVien!: Table<NhanVien>;
 
   constructor() {
     super('AccountingDB');
-    this.version(3).stores({
+    this.version(4).stores({
       hoSoDoanhNghiep: 'id, trangThai',
       nhaCungCap: 'id, ma',
       khachHang: 'id, ma',
       nganHang: 'id, ma',
       taiKhoanKeToan: 'id, soHieu',
       chungTu: 'id, soChungTu, loaiChungTu, ngayHachToan',
-      thanhToan: 'id, chungTuThuChiId, chungTuHoaDonId'
+      thanhToan: 'id, chungTuThuChiId, chungTuHoaDonId',
+      nhanVien: 'id, ma'
     }).upgrade(trans => {
       // Upgrade logic if needed
     });

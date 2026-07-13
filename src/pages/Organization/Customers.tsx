@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { db } from '../../db/db';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Users, Plus, Trash2, MoreVertical } from 'lucide-react';
+import { Users, Plus, Trash2, MoreVertical, Search } from 'lucide-react';
 import { useState } from 'react';
 
 interface CustomerForm {
@@ -14,8 +14,20 @@ interface CustomerForm {
 export default function Customers() {
   const customers = useLiveQuery(() => db.khachHang.toArray()) || [];
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CustomerForm>();
+
+  const filteredCustomers = customers.filter((c) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      c.ma.toLowerCase().includes(term) ||
+      c.ten.toLowerCase().includes(term) ||
+      c.diaChi.toLowerCase().includes(term) ||
+      c.maSoThue.toLowerCase().includes(term)
+    );
+  });
 
   const onSubmit = async (data: CustomerForm) => {
     try {
@@ -133,7 +145,21 @@ export default function Customers() {
           </form>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="p-6 pt-0">
+          <div className="mb-4 flex gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input 
+                type="text" 
+                placeholder="Tìm theo mã, tên, địa chỉ, mã số thuế..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto border border-border rounded-lg">
           <table className="w-full text-sm">
             <thead className="bg-[#E2E8F0]">
               <tr>
@@ -145,14 +171,14 @@ export default function Customers() {
               </tr>
             </thead>
             <tbody>
-              {customers.length === 0 ? (
+              {filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-text-secondary">
-                    Chưa có khách hàng nào. Hãy thêm mới!
+                    Không tìm thấy khách hàng nào.
                   </td>
                 </tr>
               ) : (
-                customers.map((customer) => (
+                filteredCustomers.map((customer) => (
                   <tr key={customer.id} className="border-b border-border hover:bg-bg-muted transition-colors">
                     <td className="py-4 px-4 font-medium text-black">{customer.ma}</td>
                     <td className="py-4 px-4 text-black">{customer.ten}</td>
@@ -180,6 +206,7 @@ export default function Customers() {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     </div>
   );
