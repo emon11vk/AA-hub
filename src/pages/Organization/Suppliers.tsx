@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { db } from '../../db/db';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Truck, Plus, Trash2 } from 'lucide-react';
+import { Truck, Plus, Trash2, MoreVertical } from 'lucide-react';
+import { useState } from 'react';
 
 interface SupplierForm {
   ma: string;
@@ -13,25 +14,54 @@ interface SupplierForm {
 
 export default function Suppliers() {
   const suppliers = useLiveQuery(() => db.nhaCungCap.toArray()) || [];
+  const [editingId, setEditingId] = useState<string | null>(null);
   
   const { register, handleSubmit, reset, formState: { errors } } = useForm<SupplierForm>();
 
   const onSubmit = async (data: SupplierForm) => {
     try {
-      await db.nhaCungCap.add({
-        id: crypto.randomUUID(),
-        ma: data.ma,
-        ten: data.ten,
-        diaChi: data.diaChi,
-        maSoThue: data.maSoThue,
-        tenHangHoa: data.tenHangHoa,
-        daVoHieuHoa: false,
-      });
-      reset();
+      if (editingId) {
+        await db.nhaCungCap.update(editingId, {
+          ma: data.ma,
+          ten: data.ten,
+          diaChi: data.diaChi,
+          maSoThue: data.maSoThue,
+          tenHangHoa: data.tenHangHoa,
+        });
+        setEditingId(null);
+      } else {
+        await db.nhaCungCap.add({
+          id: crypto.randomUUID(),
+          ma: data.ma,
+          ten: data.ten,
+          diaChi: data.diaChi,
+          maSoThue: data.maSoThue,
+          tenHangHoa: data.tenHangHoa,
+          daVoHieuHoa: false,
+        });
+      }
+      reset({ ma: '', ten: '', diaChi: '', maSoThue: '', tenHangHoa: '' });
     } catch (error) {
       console.error(error);
-      alert('Có lỗi xảy ra khi thêm nhà cung cấp.');
+      alert('Có lỗi xảy ra khi lưu nhà cung cấp.');
     }
+  };
+
+  const handleEdit = (supplier: any) => {
+    setEditingId(supplier.id);
+    reset({
+      ma: supplier.ma,
+      ten: supplier.ten,
+      diaChi: supplier.diaChi,
+      maSoThue: supplier.maSoThue,
+      tenHangHoa: supplier.tenHangHoa
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    reset({ ma: '', ten: '', diaChi: '', maSoThue: '', tenHangHoa: '' });
   };
 
   const handleDelete = async (id: string) => {
@@ -51,7 +81,7 @@ export default function Suppliers() {
         <div className="p-6 bg-white bg-opacity-50">
           <form onSubmit={handleSubmit(onSubmit)} className="bg-bg-muted p-5 rounded-xl border border-border">
             <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
-              <Plus size={16} /> Thêm nhà cung cấp mới
+              <Plus size={16} /> {editingId ? 'Chỉnh sửa nhà cung cấp' : 'Thêm nhà cung cấp mới'}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
@@ -95,12 +125,21 @@ export default function Suppliers() {
                 />
               </div>
             </div>
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex justify-end gap-2">
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="bg-white border border-border hover:bg-gray-50 text-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Hủy
+                </button>
+              )}
               <button
                 type="submit"
                 className="bg-text-primary hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                Thêm mới
+                {editingId ? 'Cập nhật' : 'Thêm mới'}
               </button>
             </div>
           </form>
@@ -115,7 +154,7 @@ export default function Suppliers() {
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Địa chỉ</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Mặt hàng</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Mã số thuế</th>
-                <th className="py-3 px-4 text-center font-bold text-text-primary w-20">Xóa</th>
+                <th className="py-3 px-4 text-center font-bold text-text-primary w-24">Chỉnh sửa</th>
               </tr>
             </thead>
             <tbody>
@@ -134,12 +173,20 @@ export default function Suppliers() {
                     <td className="py-4 px-4 text-black">{supplier.tenHangHoa}</td>
                     <td className="py-4 px-4 font-mono text-xs text-black">{supplier.maSoThue}</td>
                     <td className="py-4 px-4 text-center">
-                      <button 
-                        onClick={() => handleDelete(supplier.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button 
+                          onClick={() => handleEdit(supplier)}
+                          className="text-text-secondary hover:text-primary transition-colors p-1"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(supplier.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

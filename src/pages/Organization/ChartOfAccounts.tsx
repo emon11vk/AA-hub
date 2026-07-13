@@ -10,6 +10,7 @@ export default function ChartOfAccounts() {
   const [editingCell, setEditingCell] = useState<{ id: string, field: 'duNoDauKy' | 'duCoDauKy' } | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<any>(null);
   
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
@@ -39,15 +40,49 @@ export default function ChartOfAccounts() {
     }
   };
 
-  const onAddAccount = async (data: any) => {
-    await db.taiKhoanKeToan.add({
-      id: data.soHieu,
-      soHieu: data.soHieu,
-      tenTaiKhoan: data.tenTaiKhoan,
-      loaiTaiKhoan: data.loaiTaiKhoan,
-      duNoDauKy: parseFloat(data.duNoDauKy) || 0,
-      duCoDauKy: parseFloat(data.duCoDauKy) || 0,
+  const handleOpenAddModal = () => {
+    reset({
+      soHieu: '',
+      tenTaiKhoan: '',
+      loaiTaiKhoan: 'TAI_SAN',
+      duNoDauKy: 0,
+      duCoDauKy: 0
     });
+    setEditingAccount(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (acc: any) => {
+    reset({
+      soHieu: acc.soHieu,
+      tenTaiKhoan: acc.tenTaiKhoan,
+      loaiTaiKhoan: acc.loaiTaiKhoan,
+      duNoDauKy: acc.duNoDauKy,
+      duCoDauKy: acc.duCoDauKy
+    });
+    setEditingAccount(acc);
+    setIsModalOpen(true);
+  };
+
+  const onSaveAccount = async (data: any) => {
+    if (editingAccount) {
+      await db.taiKhoanKeToan.update(editingAccount.id, {
+        soHieu: data.soHieu,
+        tenTaiKhoan: data.tenTaiKhoan,
+        loaiTaiKhoan: data.loaiTaiKhoan,
+        duNoDauKy: parseFloat(data.duNoDauKy) || 0,
+        duCoDauKy: parseFloat(data.duCoDauKy) || 0,
+      });
+    } else {
+      await db.taiKhoanKeToan.add({
+        id: data.soHieu,
+        soHieu: data.soHieu,
+        tenTaiKhoan: data.tenTaiKhoan,
+        loaiTaiKhoan: data.loaiTaiKhoan,
+        duNoDauKy: parseFloat(data.duNoDauKy) || 0,
+        duCoDauKy: parseFloat(data.duCoDauKy) || 0,
+      });
+    }
     setIsModalOpen(false);
     reset();
   };
@@ -78,7 +113,7 @@ export default function ChartOfAccounts() {
         <div className="p-6 bg-white bg-opacity-50">
           <div className="flex justify-end mb-4">
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleOpenAddModal}
               className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
             >
               <Plus size={16} />
@@ -94,7 +129,7 @@ export default function ChartOfAccounts() {
                   <th className="py-3 px-4 text-left font-bold text-text-primary">Tên tài khoản</th>
                   <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Nợ</th>
                   <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Có</th>
-                  <th className="py-3 px-4 text-center font-bold text-text-primary w-20">Hành động</th>
+                  <th className="py-3 px-4 text-center font-bold text-text-primary w-24">Chỉnh sửa</th>
                 </tr>
               </thead>
               <tbody>
@@ -151,7 +186,7 @@ export default function ChartOfAccounts() {
                       </td>
 
                       <td className="py-4 px-4 text-center">
-                        <button className="text-text-secondary hover:text-text-primary p-1">
+                        <button onClick={() => handleOpenEditModal(acc)} className="text-text-secondary hover:text-primary p-1 transition-colors">
                           <MoreVertical size={16} />
                         </button>
                       </td>
@@ -181,13 +216,13 @@ export default function ChartOfAccounts() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
             <div className="flex justify-between items-center p-6 border-b border-border">
-              <h2 className="text-xl font-bold text-text-primary">Thêm tài khoản mới</h2>
+              <h2 className="text-xl font-bold text-text-primary">{editingAccount ? 'Chỉnh sửa tài khoản' : 'Thêm tài khoản mới'}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-text-secondary hover:text-text-primary">
                 <X size={24} />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit(onAddAccount)} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit(onSaveAccount)} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">Số hiệu tài khoản</label>
                 <input 

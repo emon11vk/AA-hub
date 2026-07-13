@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { db } from '../../db/db';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Users, Plus, Trash2 } from 'lucide-react';
+import { Users, Plus, Trash2, MoreVertical } from 'lucide-react';
+import { useState } from 'react';
 
 interface CustomerForm {
   ma: string;
@@ -12,24 +13,51 @@ interface CustomerForm {
 
 export default function Customers() {
   const customers = useLiveQuery(() => db.khachHang.toArray()) || [];
+  const [editingId, setEditingId] = useState<string | null>(null);
   
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CustomerForm>();
 
   const onSubmit = async (data: CustomerForm) => {
     try {
-      await db.khachHang.add({
-        id: crypto.randomUUID(),
-        ma: data.ma,
-        ten: data.ten,
-        diaChi: data.diaChi,
-        maSoThue: data.maSoThue,
-        daVoHieuHoa: false,
-      });
-      reset();
+      if (editingId) {
+        await db.khachHang.update(editingId, {
+          ma: data.ma,
+          ten: data.ten,
+          diaChi: data.diaChi,
+          maSoThue: data.maSoThue,
+        });
+        setEditingId(null);
+      } else {
+        await db.khachHang.add({
+          id: crypto.randomUUID(),
+          ma: data.ma,
+          ten: data.ten,
+          diaChi: data.diaChi,
+          maSoThue: data.maSoThue,
+          daVoHieuHoa: false,
+        });
+      }
+      reset({ ma: '', ten: '', diaChi: '', maSoThue: '' });
     } catch (error) {
       console.error(error);
-      alert('Có lỗi xảy ra khi thêm khách hàng.');
+      alert('Có lỗi xảy ra khi lưu khách hàng.');
     }
+  };
+
+  const handleEdit = (customer: any) => {
+    setEditingId(customer.id);
+    reset({
+      ma: customer.ma,
+      ten: customer.ten,
+      diaChi: customer.diaChi,
+      maSoThue: customer.maSoThue
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    reset({ ma: '', ten: '', diaChi: '', maSoThue: '' });
   };
 
   const handleDelete = async (id: string) => {
@@ -49,7 +77,7 @@ export default function Customers() {
         <div className="p-6 bg-white bg-opacity-50">
           <form onSubmit={handleSubmit(onSubmit)} className="bg-bg-muted p-5 rounded-xl border border-border">
             <h3 className="text-sm font-bold text-text-primary mb-4 flex items-center gap-2">
-              <Plus size={16} /> Thêm khách hàng mới
+              <Plus size={16} /> {editingId ? 'Chỉnh sửa khách hàng' : 'Thêm khách hàng mới'}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -85,12 +113,21 @@ export default function Customers() {
                 />
               </div>
             </div>
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex justify-end gap-2">
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="bg-white border border-border hover:bg-gray-50 text-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Hủy
+                </button>
+              )}
               <button
                 type="submit"
                 className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                Thêm mới
+                {editingId ? 'Cập nhật' : 'Thêm mới'}
               </button>
             </div>
           </form>
@@ -104,7 +141,7 @@ export default function Customers() {
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Tên khách hàng</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Địa chỉ</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Mã số thuế</th>
-                <th className="py-3 px-4 text-center font-bold text-text-primary w-20">Xóa</th>
+                <th className="py-3 px-4 text-center font-bold text-text-primary w-24">Chỉnh sửa</th>
               </tr>
             </thead>
             <tbody>
@@ -122,12 +159,20 @@ export default function Customers() {
                     <td className="py-4 px-4 text-black truncate max-w-xs">{customer.diaChi}</td>
                     <td className="py-4 px-4 font-mono text-xs text-black">{customer.maSoThue}</td>
                     <td className="py-4 px-4 text-center">
-                      <button 
-                        onClick={() => handleDelete(customer.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button 
+                          onClick={() => handleEdit(customer)}
+                          className="text-text-secondary hover:text-primary transition-colors p-1"
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(customer.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
