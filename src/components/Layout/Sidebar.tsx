@@ -47,7 +47,7 @@ const navItems: NavItem[] = [
     children: [
       { id: 'so-nhat-ki-chung', label: 'Sổ nhật kí chung', path: '/reports/general-journal' },
       { id: 'bang-can-doi-so-phat-sinh', label: 'Bảng cân đối số phát sinh', path: '/reports/trial-balance' },
-      { id: 'bang-can-doi-ke-toan', label: 'Bảng cân đối kế toán', path: '/reports/balance-sheet' },
+      { id: 'bang-can-doi-ke-toan', label: 'Báo cáo tình hình tài chính', path: '/reports/balance-sheet' },
       { id: 'bc-ket-qua-kd', label: 'Báo cáo kết quả hoạt động kinh doanh', path: '/reports/income-statement' },
     ]
   }
@@ -134,10 +134,8 @@ export default function Sidebar() {
   return (
     <aside className="w-[280px] bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen sticky top-0 z-20 print:hidden">
       <div className="h-16 flex items-center px-5 border-b border-gray-200">
-        <div className="w-8 h-8 bg-[#b91c1c] rounded-md mr-3 flex items-center justify-center shadow-sm">
-          <span className="text-white text-[13px] font-bold tracking-wider font-sans">AA</span>
-        </div>
-        <h1 className="text-[15px] font-semibold text-gray-900 flex-1 font-sans tracking-tight">AA-hub</h1>
+        <img src="/faasa-logo.png" alt="FAASA Logo" className="w-11 h-11 object-contain mr-3" />
+        <h1 className="text-[15px] font-semibold text-gray-900 flex-1 font-sans tracking-tight">Accounting & Auditing Hub</h1>
         <button className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 transition-colors">
           <Menu size={20} />
         </button>

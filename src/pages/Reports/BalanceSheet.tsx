@@ -129,7 +129,7 @@ export default function BalanceSheet() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-text-primary">Báo Cáo Tình Hình Tài Chính</h1>
-            <p className="text-text-muted text-sm mt-1">(Bảng cân đối kế toán)</p>
+            <p className="text-text-muted text-sm mt-1">(Báo cáo tình hình tài chính)</p>
           </div>
         </div>
         
