@@ -128,9 +128,11 @@ export default function Sidebar() {
   return (
     <aside className="w-[280px] bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen sticky top-0 z-20 print:hidden">
       <div className="h-16 flex items-center px-5 border-b border-gray-200">
-        <img src="/faasa-logo.png" alt="FAASA Logo" className="w-11 h-11 object-contain mr-3" />
-        <h1 className="text-[15px] font-semibold text-gray-900 flex-1 font-sans tracking-tight">Accounting & Auditing Hub</h1>
-        <button className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 transition-colors">
+        <img src="/faasa-logo.png" alt="FAASA Logo" className="w-10 h-10 object-contain mr-3 shrink-0" />
+        <h1 className="text-[14px] font-bold text-gray-900 flex-1 font-sans tracking-tight leading-tight">
+          Accounting &<br />Auditing Hub
+        </h1>
+        <button className="p-1.5 hover:bg-gray-100 rounded-md text-gray-500 transition-colors shrink-0">
           <Menu size={20} />
         </button>
       </div>
