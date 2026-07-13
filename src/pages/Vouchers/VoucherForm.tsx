@@ -172,7 +172,7 @@ export default function VoucherForm() {
       }
       
       alert('Lưu chứng từ thành công!');
-      navigate(isBank ? '/vouchers/bank' : '/vouchers/cash');
+      navigate('/vouchers');
     } catch (error) {
       console.error(error);
       alert('Có lỗi xảy ra khi lưu.');
