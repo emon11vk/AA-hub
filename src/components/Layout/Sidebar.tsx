@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Menu, Building2, Landmark, Wallet, BarChart2,
-  ChevronRight, DollarSign
+  ChevronRight, DollarSign, LayoutDashboard
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -14,6 +14,12 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
+  {
+    id: 'tong-quan',
+    label: 'Tổng Quan',
+    path: '/',
+    icon: LayoutDashboard,
+  },
   {
     id: 'thong-tin-to-chuc',
     label: 'Thông Tin Tổ Chức',
@@ -104,13 +110,14 @@ const MenuItem = ({ item, level = 0 }: { item: NavItem; level?: number }) => {
   return (
     <NavLink
       to={item.path || '#'}
+      end={item.path === '/'}
       className={({ isActive }) =>
-        `flex items-center py-2 pr-4 mb-0.5 font-sans text-[14px] transition-colors focus:outline-none border-l-4 ${isActive
-          ? 'text-gray-900 font-semibold bg-gray-50 border-[#b91c1c]'
-          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent font-medium'
+        `flex items-center py-2 pr-4 mb-0.5 font-sans text-[14px] transition-colors focus:outline-none rounded-r-lg ${isActive
+          ? 'text-[#b91c1c] font-semibold bg-red-50/50'
+          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium'
         }`
       }
-      style={{ paddingLeft: `calc(${level * 1.25 + 1.25}rem - 4px)` }}
+      style={{ paddingLeft: `${level * 1.25 + 1.25}rem` }}
     >
       {({ isActive }) => (
         <>
