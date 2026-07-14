@@ -49,7 +49,7 @@ export const VoucherTemplate = React.forwardRef<HTMLDivElement, VoucherTemplateP
             <div className="text-sm mt-1">Số: <span className="font-bold">{voucher.soChungTu}</span></div>
           </div>
 
-          <div className="space-y-2 text-sm mb-6 flex-1">
+          <div className="space-y-2 text-sm mb-6">
             <div className="flex">
               <span className="w-48">{isPhieuThu ? 'Họ và tên người nộp tiền:' : 'Họ và tên người nhận tiền:'}</span>
               <span className="font-bold flex-1">{voucher.tenDoiTuong}</span>
@@ -82,7 +82,7 @@ export const VoucherTemplate = React.forwardRef<HTMLDivElement, VoucherTemplateP
             </div>
           </div>
 
-          <div className="flex justify-between text-sm pb-16">
+          <div className="flex justify-between text-sm mt-8 pb-16">
             <div className="text-center w-1/4">
               <div className="font-bold mb-16">Giám đốc</div>
               <div>(Ký, họ tên)</div>
