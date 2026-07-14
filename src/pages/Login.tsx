@@ -2,26 +2,59 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { supabase } from '../lib/supabase';
 
 const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const login = useAuthStore((state) => state.login);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg('');
+
+    if (!email.endsWith('@ftu.edu.vn')) {
+      setErrorMsg('Vui lòng sử dụng email có đuôi @ftu.edu.vn');
+      return;
+    }
+
     setIsLoading(true);
-    // Simulate login delay
-    setTimeout(() => {
-      login({
-        id: 'u1',
-        fullName: 'Nguyễn Văn A',
-        class: 'Lớp 10A1',
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setErrorMsg('Email hoặc mật khẩu không chính xác.');
+        } else if (error.message.includes('Email not confirmed')) {
+          setErrorMsg('Vui lòng xác nhận email hoặc liên hệ Admin để tắt tính năng xác nhận.');
+        } else {
+          setErrorMsg(error.message);
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        login({
+          id: data.user.id,
+          fullName: data.user.email?.split('@')[0] || 'Sinh viên',
+          class: 'Sinh viên FTU',
+        });
+        navigate('/');
+      }
+    } catch (err) {
+      setErrorMsg('Đã xảy ra lỗi khi đăng nhập.');
+    } finally {
       setIsLoading(false);
-      navigate('/');
-    }, 800);
+    }
   };
 
   return (
@@ -45,6 +78,12 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Đăng nhập</h1>
           <p className="text-gray-500 mb-8 text-sm">Hệ thống thực hành Kế toán - Kiểm toán dành cho sinh viên FTU.</p>
 
+          {errorMsg && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+              {errorMsg}
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -58,6 +97,8 @@ const Login = () => {
                   id="email"
                   type="email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000] transition-colors"
                   placeholder="masv@ftu.edu.vn"
                 />
@@ -81,6 +122,8 @@ const Login = () => {
                   id="password"
                   type="password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000] transition-colors"
                   placeholder="••••••••"
                 />
@@ -122,7 +165,7 @@ const Login = () => {
 
       {/* Right Image Section */}
       <div className="hidden lg:block lg:w-1/2 relative bg-gray-50 overflow-hidden">
-        {/* Placeholder gradient / logo combo if image fails to load */}
+        {/* ... existing code for Right Section remains the same */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#990000] to-[#5a0000] flex flex-col items-center justify-center text-white p-12">
           <img src="/ftu-logo-white.png" alt="FTU Logo" className="w-32 h-auto mb-8 opacity-80" />
           <h2 className="text-3xl font-bold mb-4 tracking-tight text-center">KHOA KẾ TOÁN - KIỂM TOÁN</h2>
@@ -131,18 +174,15 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Real background image wrapper: User's image should be named bg-login.jpg in public folder */}
         <img
           src="/bg-login.jpg"
           alt="FTU Accounting Background"
           className="absolute inset-0 h-full w-full object-cover object-center z-10"
           onError={(e) => {
-            // Hide if missing so the fallback gradient shows
             e.currentTarget.style.display = 'none';
           }}
         />
 
-        {/* Overlay gradient on top of the image for better text legibility if we want to add text over the user's image */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent mix-blend-multiply z-20 pointer-events-none" />
 
         <div className="absolute bottom-0 left-0 right-0 p-12 text-white z-30 pointer-events-none">
