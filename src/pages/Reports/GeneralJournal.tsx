@@ -124,9 +124,7 @@ export default function GeneralJournal() {
             <button className="bg-[#111827] hover:bg-gray-800 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
               <Search size={16} /> Tìm Kiếm
             </button>
-            <button className="bg-[#b91c1c] hover:bg-red-800 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
-              <Send size={16} /> Nộp Bài
-            </button>
+
             <button 
               onClick={handlePrint}
               className="bg-white border border-border hover:bg-bg-muted text-text-primary px-5 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors shadow-sm"
