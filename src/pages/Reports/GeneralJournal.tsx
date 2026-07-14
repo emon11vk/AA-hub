@@ -48,7 +48,8 @@ export default function GeneralJournal() {
             soChungTu: ct.soChungTu,
             loaiChungTu: ct.loaiChungTu,
             dienGiai: bt.dienGiai || ct.dienGiaiChung,
-            tkDoiUng: bt.tkNo,
+            soHieuTK: bt.tkNo,
+            tkDoiUng: bt.tkCo,
             psNo: bt.soTien,
             psCo: 0,
           });
@@ -63,7 +64,8 @@ export default function GeneralJournal() {
             soChungTu: ct.soChungTu,
             loaiChungTu: ct.loaiChungTu,
             dienGiai: bt.dienGiai || ct.dienGiaiChung,
-            tkDoiUng: bt.tkCo,
+            soHieuTK: bt.tkCo,
+            tkDoiUng: bt.tkNo,
             psNo: 0,
             psCo: bt.soTien,
           });
@@ -184,6 +186,7 @@ export default function GeneralJournal() {
                   <th className="px-4 py-4 whitespace-nowrap">Ngày chứng từ</th>
                   <th className="px-4 py-4 whitespace-nowrap">Số chứng từ</th>
                   <th className="px-4 py-4">Diễn giải</th>
+                  <th className="px-4 py-4 whitespace-nowrap text-center">Số hiệu TK</th>
                   <th className="px-4 py-4 whitespace-nowrap text-center">TK đối ứng</th>
                   <th className="px-4 py-4 whitespace-nowrap text-right">Phát sinh Nợ</th>
                   <th className="px-4 py-4 whitespace-nowrap text-right">Phát sinh Có</th>
@@ -211,6 +214,9 @@ export default function GeneralJournal() {
                       <td className="px-4 py-4 text-text-secondary min-w-[200px]">
                         {line.dienGiai}
                       </td>
+                      <td className="px-4 py-4 text-center font-bold text-primary">
+                        {line.soHieuTK || '-'}
+                      </td>
                       <td className="px-4 py-4 text-center font-medium text-text-primary">
                         {line.tkDoiUng || '-'}
                       </td>
@@ -226,7 +232,7 @@ export default function GeneralJournal() {
                 {/* Dòng Tổng cộng */}
                 {journalEntries.length > 0 && (
                   <tr className="bg-gray-50 font-bold border-t-2 border-gray-300">
-                    <td colSpan={5} className="px-4 py-4 text-right text-text-primary uppercase text-xs">Tổng cộng:</td>
+                    <td colSpan={6} className="px-4 py-4 text-right text-text-primary uppercase text-xs">Tổng cộng:</td>
                     <td className="px-4 py-4 text-right text-black tabular-nums">
                       {totalPsNo > 0 ? formatCurrency(totalPsNo) : '0'}
                     </td>
