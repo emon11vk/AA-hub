@@ -54,6 +54,7 @@ export interface NganHang {
   chiNhanh: string;
   daVoHieuHoa?: boolean;
   duNoDauKy?: number;
+  duCoDauKy?: number;
 }
 
 export interface TaiKhoanKeToan {

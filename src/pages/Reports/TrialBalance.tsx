@@ -78,7 +78,7 @@ export default function TrialBalance() {
         duCoDauKy = nhaCungCapList.reduce((sum, s) => sum + (s.duCoDauKy || 0), 0);
       } else if (tk.soHieu === '112') {
         duNoDauKy = nganHangList.reduce((sum, b) => sum + (b.duNoDauKy || 0), 0);
-        duCoDauKy = 0; // Bank usually has Debit balance
+        duCoDauKy = nganHangList.reduce((sum, b) => sum + (b.duCoDauKy || 0), 0);
       }
 
       if (tk.loaiTaiKhoan === 'TAI_SAN' || tk.loaiTaiKhoan === 'CHI_PHI') {

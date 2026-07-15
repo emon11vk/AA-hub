@@ -34,6 +34,22 @@ export default function VoucherForm() {
   const isBank = loaiChungTu?.includes('TIEN_GUI') || loaiChungTu?.includes('UY_NHIEM');
   const isReceipt = loaiChungTu?.includes('THU') || loaiChungTu === 'GIAY_BAO';
 
+  let showKhachHang = false;
+  let showNhaCungCap = false;
+  let showNhanVien = false;
+
+  if (loaiChungTu?.includes('_KH')) {
+    showKhachHang = true;
+  } else if (loaiChungTu?.includes('_NCC')) {
+    showNhaCungCap = true;
+  } else if (loaiChungTu === 'PHIEU_THU' || loaiChungTu === 'PHIEU_CHI' || loaiChungTu === 'THU_TIEN_GUI' || loaiChungTu === 'UY_NHIEM_CHI') {
+    showNhanVien = true;
+  } else {
+    showKhachHang = true;
+    showNhaCungCap = true;
+    showNhanVien = true;
+  }
+
   const [activeTab, setActiveTab] = useState<'HACH_TOAN' | 'THUE'>('HACH_TOAN');
 
   // Load existing data if edit mode
@@ -41,6 +57,7 @@ export default function VoucherForm() {
   
   const khachHangs = useLiveQuery(() => db.khachHang.toArray()) || [];
   const nhaCungCaps = useLiveQuery(() => db.nhaCungCap.toArray()) || [];
+  const nhanViens = useLiveQuery(() => db.nhanVien.toArray()) || [];
   
   const accountsList = useLiveQuery(() => db.taiKhoanKeToan.toArray()) || [];
 
@@ -103,14 +120,21 @@ export default function VoucherForm() {
     const val = e.target.value;
     setValue('doiTuongId', val);
     
-    // Find in both arrays
+    if (val === '') {
+      setValue('tenDoiTuong', '');
+      setValue('diaChi', '');
+      return;
+    }
+
+    // Find in arrays
     const kh = khachHangs.find(k => k.id === val);
     const ncc = nhaCungCaps.find(n => n.id === val);
-    const target = kh || ncc;
+    const nv = nhanViens.find(n => n.id === val);
+    const target = kh || ncc || nv;
     
     if (target) {
       setValue('tenDoiTuong', target.ten);
-      setValue('diaChi', target.diaChi);
+      setValue('diaChi', nv ? (target as any).phongBan : (target as any).diaChi);
     }
   };
 
@@ -227,12 +251,21 @@ export default function VoucherForm() {
                   onChange={handleObjectChange}
                 >
                   <option value="">-- Chọn đối tượng --</option>
-                  <optgroup label="Khách hàng">
-                    {khachHangs.map(k => <option key={k.id} value={k.id}>{k.ma} - {k.ten}</option>)}
-                  </optgroup>
-                  <optgroup label="Nhà cung cấp">
-                    {nhaCungCaps.map(n => <option key={n.id} value={n.id}>{n.ma} - {n.ten}</option>)}
-                  </optgroup>
+                  {showKhachHang && (
+                    <optgroup label="Khách hàng">
+                      {khachHangs.map(k => <option key={k.id} value={k.id}>{k.ma} - {k.ten}</option>)}
+                    </optgroup>
+                  )}
+                  {showNhaCungCap && (
+                    <optgroup label="Nhà cung cấp">
+                      {nhaCungCaps.map(n => <option key={n.id} value={n.id}>{n.ma} - {n.ten}</option>)}
+                    </optgroup>
+                  )}
+                  {showNhanVien && (
+                    <optgroup label="Nhân viên">
+                      {nhanViens.map(nv => <option key={nv.id} value={nv.id}>{nv.ma} - {nv.ten}</option>)}
+                    </optgroup>
+                  )}
                 </select>
                 <input
                   {...register('tenDoiTuong')}

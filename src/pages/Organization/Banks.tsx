@@ -10,6 +10,7 @@ interface BankForm {
   soTaiKhoan: string;
   chiNhanh: string;
   duNoDauKy: number;
+  duCoDauKy: number;
 }
 
 export default function Banks() {
@@ -39,6 +40,7 @@ export default function Banks() {
           soTaiKhoan: data.soTaiKhoan,
           chiNhanh: data.chiNhanh,
           duNoDauKy: Number(data.duNoDauKy) || 0,
+          duCoDauKy: Number(data.duCoDauKy) || 0,
         });
         setEditingId(null);
       } else {
@@ -49,10 +51,11 @@ export default function Banks() {
           soTaiKhoan: data.soTaiKhoan,
           chiNhanh: data.chiNhanh,
           duNoDauKy: Number(data.duNoDauKy) || 0,
+          duCoDauKy: Number(data.duCoDauKy) || 0,
           daVoHieuHoa: false,
         });
       }
-      reset({ ma: '', ten: '', soTaiKhoan: '', chiNhanh: '', duNoDauKy: 0 });
+      reset({ ma: '', ten: '', soTaiKhoan: '', chiNhanh: '', duNoDauKy: 0, duCoDauKy: 0 });
     } catch (error) {
       console.error(error);
       alert('Có lỗi xảy ra khi lưu ngân hàng.');
@@ -66,14 +69,15 @@ export default function Banks() {
       ten: bank.ten,
       soTaiKhoan: bank.soTaiKhoan,
       chiNhanh: bank.chiNhanh,
-      duNoDauKy: bank.duNoDauKy || 0
+      duNoDauKy: bank.duNoDauKy || 0,
+      duCoDauKy: bank.duCoDauKy || 0
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    reset({ ma: '', ten: '', soTaiKhoan: '', chiNhanh: '', duNoDauKy: 0 });
+    reset({ ma: '', ten: '', soTaiKhoan: '', chiNhanh: '', duNoDauKy: 0, duCoDauKy: 0 });
   };
 
   const handleDelete = async (id: string) => {
@@ -137,6 +141,15 @@ export default function Banks() {
                   placeholder="0"
                 />
               </div>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium text-text-secondary">Dư Có đầu kỳ</label>
+                <input
+                  type="number"
+                  {...register('duCoDauKy')}
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  placeholder="0"
+                />
+              </div>
             </div>
             <div className="mt-4 flex justify-end gap-2">
               {editingId && (
@@ -181,6 +194,7 @@ export default function Banks() {
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Số tài khoản</th>
                 <th className="py-3 px-4 text-left font-bold text-text-primary">Chi nhánh</th>
                 <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Nợ đầu kỳ</th>
+                <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Có đầu kỳ</th>
                 <th className="py-3 px-4 text-center font-bold text-text-primary w-24">Chỉnh sửa</th>
               </tr>
             </thead>
@@ -199,6 +213,7 @@ export default function Banks() {
                     <td className="py-4 px-4 text-black font-mono">{bank.soTaiKhoan}</td>
                     <td className="py-4 px-4 text-xs text-black">{bank.chiNhanh}</td>
                     <td className="py-4 px-4 text-right tabular-nums text-black">{bank.duNoDauKy ? bank.duNoDauKy.toLocaleString('vi-VN') : '-'}</td>
+                    <td className="py-4 px-4 text-right tabular-nums text-black">{bank.duCoDauKy ? bank.duCoDauKy.toLocaleString('vi-VN') : '-'}</td>
                     <td className="py-4 px-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button 

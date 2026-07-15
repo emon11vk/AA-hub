@@ -149,14 +149,14 @@ export default function ChartOfAccounts() {
                 </tr>
               </thead>
               <tbody>
-                {accounts.length === 0 ? (
+                {accounts.filter(acc => acc.soHieu !== '112').length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-text-secondary">
                       Chưa có dữ liệu. Vui lòng kiểm tra seed data.
                     </td>
                   </tr>
                 ) : (
-                  accounts.map((acc) => (
+                  accounts.filter(acc => acc.soHieu !== '112').map((acc) => (
                     <tr key={acc.id} className="border-b border-border hover:bg-bg-muted transition-colors">
                       <td className="py-4 px-4 font-medium text-black">{acc.soHieu}</td>
                       <td className="py-4 px-4 text-text-primary font-medium">{acc.tenTaiKhoan}</td>
