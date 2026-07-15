@@ -6,8 +6,14 @@ import { useForm } from 'react-hook-form';
 
 export default function ChartOfAccounts() {
   const accounts = useLiveQuery(() => db.taiKhoanKeToan.toArray()) || [];
+  const customers = useLiveQuery(() => db.khachHang.toArray()) || [];
+  const suppliers = useLiveQuery(() => db.nhaCungCap.toArray()) || [];
+  const banks = useLiveQuery(() => db.nganHang.toArray()) || [];
   
-  const [editingCell, setEditingCell] = useState<{ id: string, field: 'duNoDauKy' | 'duCoDauKy' } | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
+  const TABS = ['Số dư tài khoản', 'Công nợ khách hàng', 'Công nợ nhà cung cấp', 'Số dư ngân hàng', 'Tồn kho vật tư, hàng hóa', 'Tài sản cố định đầu kỳ'];
+
+  const [editingCell, setEditingCell] = useState<{ id: string, type: string, field: string } | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<any>(null);
@@ -17,17 +23,23 @@ export default function ChartOfAccounts() {
   const totalDuNo = accounts.reduce((sum, acc) => sum + (acc.duNoDauKy || 0), 0);
   const totalDuCo = accounts.reduce((sum, acc) => sum + (acc.duCoDauKy || 0), 0);
 
-  const startEditing = (id: string, field: 'duNoDauKy' | 'duCoDauKy', value: number) => {
-    setEditingCell({ id, field });
+  const startEditing = (id: string, type: string, field: string, value: number) => {
+    setEditingCell({ id, type, field });
     setEditValue(value === 0 ? '' : value.toString());
   };
 
   const handleSaveEdit = async () => {
     if (editingCell) {
       const numericValue = parseFloat(editValue) || 0;
-      await db.taiKhoanKeToan.update(editingCell.id, {
-        [editingCell.field]: numericValue
-      });
+      if (editingCell.type === 'account') {
+        await db.taiKhoanKeToan.update(editingCell.id, { [editingCell.field]: numericValue });
+      } else if (editingCell.type === 'customer') {
+        await db.khachHang.update(editingCell.id, { [editingCell.field]: numericValue });
+      } else if (editingCell.type === 'supplier') {
+        await db.nhaCungCap.update(editingCell.id, { [editingCell.field]: numericValue });
+      } else if (editingCell.type === 'bank') {
+        await db.nganHang.update(editingCell.id, { [editingCell.field]: numericValue });
+      }
       setEditingCell(null);
     }
   };
@@ -99,10 +111,11 @@ export default function ChartOfAccounts() {
 
         <div className="p-6 border-b border-border bg-white">
           <div className="flex gap-8 text-sm font-medium">
-            {['Số dư tài khoản', 'Công nợ khách hàng', 'Công nợ nhà cung cấp', 'Tồn kho vật tư, hàng hóa', 'Tài sản cố định đầu kỳ'].map((tab, idx) => (
+            {TABS.map((tab, idx) => (
               <button 
                 key={idx}
-                className={`pb-2 px-1 border-b-2 ${idx === 0 ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:text-text-primary hover:border-gray-300'} transition-all`}
+                onClick={() => setActiveTab(idx)}
+                className={`pb-2 px-1 border-b-2 ${idx === activeTab ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:text-text-primary hover:border-gray-300'} transition-all`}
               >
                 {tab}
               </button>
@@ -111,17 +124,20 @@ export default function ChartOfAccounts() {
         </div>
 
         <div className="p-4 sm:p-6 bg-white bg-opacity-50">
-          <div className="flex justify-end mb-4">
-            <button 
-              onClick={handleOpenAddModal}
-              className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
-            >
-              <Plus size={16} />
-              Thêm Mới
-            </button>
-          </div>
+          {activeTab === 0 && (
+            <div className="flex justify-end mb-4">
+              <button 
+                onClick={handleOpenAddModal}
+                className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+              >
+                <Plus size={16} />
+                Thêm Mới
+              </button>
+            </div>
+          )}
           
           <div className="overflow-x-auto border border-border rounded-lg">
+            {activeTab === 0 && (
             <table className="w-full text-sm">
               <thead className="bg-[#E2E8F0]">
                 <tr>
@@ -148,7 +164,7 @@ export default function ChartOfAccounts() {
                       {/* Dư Nợ */}
                       <td 
                         className="py-4 px-4 text-right text-black font-medium tabular-nums cursor-pointer hover:bg-gray-100"
-                        onClick={() => startEditing(acc.id, 'duNoDauKy', acc.duNoDauKy)}
+                        onClick={() => startEditing(acc.id, 'account', 'duNoDauKy', acc.duNoDauKy)}
                       >
                         {editingCell?.id === acc.id && editingCell?.field === 'duNoDauKy' ? (
                           <input
@@ -168,7 +184,7 @@ export default function ChartOfAccounts() {
                       {/* Dư Có */}
                       <td 
                         className="py-4 px-4 text-right text-black font-medium tabular-nums cursor-pointer hover:bg-gray-100"
-                        onClick={() => startEditing(acc.id, 'duCoDauKy', acc.duCoDauKy)}
+                        onClick={() => startEditing(acc.id, 'account', 'duCoDauKy', acc.duCoDauKy)}
                       >
                         {editingCell?.id === acc.id && editingCell?.field === 'duCoDauKy' ? (
                           <input
@@ -207,6 +223,132 @@ export default function ChartOfAccounts() {
                 )}
               </tbody>
             </table>
+            )}
+
+            {activeTab === 1 && (
+            <table className="w-full text-sm">
+              <thead className="bg-[#E2E8F0]">
+                <tr>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Mã KH</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Tên Khách hàng</th>
+                  <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Nợ (131)</th>
+                  <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Có (131)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {customers.map((c) => (
+                  <tr key={c.id} className="border-b border-border hover:bg-bg-muted transition-colors">
+                    <td className="py-4 px-4 font-medium text-black">{c.ma}</td>
+                    <td className="py-4 px-4 text-text-primary font-medium">{c.ten}</td>
+                    <td 
+                      className="py-4 px-4 text-right text-black font-medium tabular-nums cursor-pointer hover:bg-gray-100"
+                      onClick={() => startEditing(c.id, 'customer', 'duNoDauKy', c.duNoDauKy || 0)}
+                    >
+                      {editingCell?.id === c.id && editingCell?.field === 'duNoDauKy' ? (
+                        <input
+                          type="number" autoFocus value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={handleSaveEdit} onKeyDown={handleKeyDown}
+                          className="w-full text-right px-2 py-1 border border-primary rounded focus:outline-none"
+                        />
+                      ) : ( (c.duNoDauKy || 0) > 0 ? (c.duNoDauKy || 0).toLocaleString('vi-VN') : '-' )}
+                    </td>
+                    <td 
+                      className="py-4 px-4 text-right text-black font-medium tabular-nums cursor-pointer hover:bg-gray-100"
+                      onClick={() => startEditing(c.id, 'customer', 'duCoDauKy', c.duCoDauKy || 0)}
+                    >
+                      {editingCell?.id === c.id && editingCell?.field === 'duCoDauKy' ? (
+                        <input
+                          type="number" autoFocus value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={handleSaveEdit} onKeyDown={handleKeyDown}
+                          className="w-full text-right px-2 py-1 border border-primary rounded focus:outline-none"
+                        />
+                      ) : ( (c.duCoDauKy || 0) > 0 ? (c.duCoDauKy || 0).toLocaleString('vi-VN') : '-' )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            )}
+
+            {activeTab === 2 && (
+            <table className="w-full text-sm">
+              <thead className="bg-[#E2E8F0]">
+                <tr>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Mã NCC</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Tên Nhà cung cấp</th>
+                  <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Nợ (331)</th>
+                  <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Có (331)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {suppliers.map((s) => (
+                  <tr key={s.id} className="border-b border-border hover:bg-bg-muted transition-colors">
+                    <td className="py-4 px-4 font-medium text-black">{s.ma}</td>
+                    <td className="py-4 px-4 text-text-primary font-medium">{s.ten}</td>
+                    <td 
+                      className="py-4 px-4 text-right text-black font-medium tabular-nums cursor-pointer hover:bg-gray-100"
+                      onClick={() => startEditing(s.id, 'supplier', 'duNoDauKy', s.duNoDauKy || 0)}
+                    >
+                      {editingCell?.id === s.id && editingCell?.field === 'duNoDauKy' ? (
+                        <input
+                          type="number" autoFocus value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={handleSaveEdit} onKeyDown={handleKeyDown}
+                          className="w-full text-right px-2 py-1 border border-primary rounded focus:outline-none"
+                        />
+                      ) : ( (s.duNoDauKy || 0) > 0 ? (s.duNoDauKy || 0).toLocaleString('vi-VN') : '-' )}
+                    </td>
+                    <td 
+                      className="py-4 px-4 text-right text-black font-medium tabular-nums cursor-pointer hover:bg-gray-100"
+                      onClick={() => startEditing(s.id, 'supplier', 'duCoDauKy', s.duCoDauKy || 0)}
+                    >
+                      {editingCell?.id === s.id && editingCell?.field === 'duCoDauKy' ? (
+                        <input
+                          type="number" autoFocus value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={handleSaveEdit} onKeyDown={handleKeyDown}
+                          className="w-full text-right px-2 py-1 border border-primary rounded focus:outline-none"
+                        />
+                      ) : ( (s.duCoDauKy || 0) > 0 ? (s.duCoDauKy || 0).toLocaleString('vi-VN') : '-' )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            )}
+
+            {activeTab === 3 && (
+            <table className="w-full text-sm">
+              <thead className="bg-[#E2E8F0]">
+                <tr>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Mã NH</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Tên Ngân hàng</th>
+                  <th className="py-3 px-4 text-left font-bold text-text-primary">Số tài khoản</th>
+                  <th className="py-3 px-4 text-right font-bold text-text-primary">Dư Nợ (112)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {banks.map((b) => (
+                  <tr key={b.id} className="border-b border-border hover:bg-bg-muted transition-colors">
+                    <td className="py-4 px-4 font-medium text-black">{b.ma}</td>
+                    <td className="py-4 px-4 text-text-primary font-medium">{b.ten}</td>
+                    <td className="py-4 px-4 font-mono text-xs text-black">{b.soTaiKhoan}</td>
+                    <td 
+                      className="py-4 px-4 text-right text-black font-medium tabular-nums cursor-pointer hover:bg-gray-100"
+                      onClick={() => startEditing(b.id, 'bank', 'duNoDauKy', b.duNoDauKy || 0)}
+                    >
+                      {editingCell?.id === b.id && editingCell?.field === 'duNoDauKy' ? (
+                        <input
+                          type="number" autoFocus value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={handleSaveEdit} onKeyDown={handleKeyDown}
+                          className="w-full text-right px-2 py-1 border border-primary rounded focus:outline-none"
+                        />
+                      ) : ( (b.duNoDauKy || 0) > 0 ? (b.duNoDauKy || 0).toLocaleString('vi-VN') : '-' )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            )}
+
+            {activeTab > 3 && (
+              <div className="p-8 text-center text-text-secondary">
+                Tính năng đang được phát triển...
+              </div>
+            )}
           </div>
         </div>
       </div>

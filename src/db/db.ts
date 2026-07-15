@@ -1,6 +1,5 @@
 import Dexie, { Table } from 'dexie';
 import { seedTaiKhoanKeToan } from './seedData';
-import { dummyChungTu } from './dummyTransactions';
 
 export interface HoSoDoanhNghiep {
   id: string;
@@ -24,6 +23,8 @@ export interface NhaCungCap {
   maSoThue: string;
   tenHangHoa?: string; // App gợi ý mặt hàng
   daVoHieuHoa?: boolean;
+  duNoDauKy?: number;
+  duCoDauKy?: number;
 }
 
 export interface NhanVien {
@@ -41,6 +42,8 @@ export interface KhachHang {
   diaChi: string;
   maSoThue: string;
   daVoHieuHoa?: boolean;
+  duNoDauKy?: number;
+  duCoDauKy?: number;
 }
 
 export interface NganHang {
@@ -50,6 +53,7 @@ export interface NganHang {
   soTaiKhoan: string;
   chiNhanh: string;
   daVoHieuHoa?: boolean;
+  duNoDauKy?: number;
 }
 
 export interface TaiKhoanKeToan {
@@ -127,7 +131,7 @@ export class AccountingDB extends Dexie {
   nhanVien!: Table<NhanVien>;
 
   constructor() {
-    super('AccountingDB');
+    super('AccountingDB_v2');
     this.version(4).stores({
       hoSoDoanhNghiep: 'id, trangThai',
       nhaCungCap: 'id, ma',
@@ -143,7 +147,6 @@ export class AccountingDB extends Dexie {
     
     this.on('populate', () => {
       this.taiKhoanKeToan.bulkAdd(seedTaiKhoanKeToan as TaiKhoanKeToan[]);
-      this.chungTu.bulkAdd(dummyChungTu);
     });
   }
 }

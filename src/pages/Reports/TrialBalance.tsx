@@ -16,9 +16,12 @@ export default function TrialBalance() {
 
   const taiKhoanList = useLiveQuery(() => db.taiKhoanKeToan.toArray());
   const chungTuList = useLiveQuery(() => db.chungTu.toArray());
+  const khachHangList = useLiveQuery(() => db.khachHang.toArray());
+  const nhaCungCapList = useLiveQuery(() => db.nhaCungCap.toArray());
+  const nganHangList = useLiveQuery(() => db.nganHang.toArray());
 
   const reportData = useMemo(() => {
-    if (!taiKhoanList || !chungTuList) return [];
+    if (!taiKhoanList || !chungTuList || !khachHangList || !nhaCungCapList || !nganHangList) return [];
 
     let filteredCT = chungTuList;
     if (fromDate) filteredCT = filteredCT.filter(ct => ct.ngayHachToan >= fromDate);
@@ -63,18 +66,35 @@ export default function TrialBalance() {
       let endNo = 0;
       let endCo = 0;
 
+      let duNoDauKy = tk.duNoDauKy || 0;
+      let duCoDauKy = tk.duCoDauKy || 0;
+
+      // Override opening balances for summary accounts
+      if (tk.soHieu === '131') {
+        duNoDauKy = khachHangList.reduce((sum, k) => sum + (k.duNoDauKy || 0), 0);
+        duCoDauKy = khachHangList.reduce((sum, k) => sum + (k.duCoDauKy || 0), 0);
+      } else if (tk.soHieu === '331') {
+        duNoDauKy = nhaCungCapList.reduce((sum, s) => sum + (s.duNoDauKy || 0), 0);
+        duCoDauKy = nhaCungCapList.reduce((sum, s) => sum + (s.duCoDauKy || 0), 0);
+      } else if (tk.soHieu === '112') {
+        duNoDauKy = nganHangList.reduce((sum, b) => sum + (b.duNoDauKy || 0), 0);
+        duCoDauKy = 0; // Bank usually has Debit balance
+      }
+
       if (tk.loaiTaiKhoan === 'TAI_SAN' || tk.loaiTaiKhoan === 'CHI_PHI') {
-        const balance = tk.duNoDauKy - tk.duCoDauKy + ps.no - ps.co;
+        const balance = duNoDauKy - duCoDauKy + ps.no - ps.co;
         if (balance > 0) endNo = balance;
         else endCo = -balance;
       } else {
-        const balance = tk.duCoDauKy - tk.duNoDauKy + ps.co - ps.no;
+        const balance = duCoDauKy - duNoDauKy + ps.co - ps.no;
         if (balance > 0) endCo = balance;
         else endNo = -balance;
       }
 
       return {
         ...tk,
+        duNoDauKy,
+        duCoDauKy,
         psNo: ps.no,
         psCo: ps.co,
         endNo,
@@ -87,7 +107,7 @@ export default function TrialBalance() {
     tableData.sort((a, b) => a.soHieu.localeCompare(b.soHieu));
 
     return tableData;
-  }, [taiKhoanList, chungTuList, fromDate, toDate]);
+  }, [taiKhoanList, chungTuList, khachHangList, nhaCungCapList, nganHangList, fromDate, toDate]);
 
   const totals = useMemo(() => {
     return reportData.reduce((acc, row) => ({

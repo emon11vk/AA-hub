@@ -11,29 +11,6 @@ interface EmployeeForm {
   viTri: string;
 }
 
-const MOCK_EMPLOYEES = [
-  { id: 'emp-1', ma: 'KT001', ten: 'Nguyễn Năng Hoàng', phongBan: 'Kế toán', viTri: 'Trưởng phòng' },
-  { id: 'emp-2', ma: 'NS001', ten: 'Phan Anh Lân', phongBan: 'Nhân sự', viTri: 'Trưởng phòng' },
-  { id: 'emp-3', ma: 'KD001', ten: 'Trần Thị A', phongBan: 'Kinh doanh', viTri: 'Nhân viên' },
-  { id: 'emp-4', ma: 'IT001', ten: 'Lê Văn B', phongBan: 'IT', viTri: 'Chuyên viên' },
-  { id: 'emp-5', ma: 'MK001', ten: 'Phạm Quỳnh C', phongBan: 'Marketing', viTri: 'Nhân viên' },
-  { id: 'emp-6', ma: 'KT002', ten: 'Hoàng Trọng D', phongBan: 'Kế toán', viTri: 'Nhân viên' },
-  { id: 'emp-7', ma: 'NS002', ten: 'Vũ Thị E', phongBan: 'Nhân sự', viTri: 'Chuyên viên' },
-  { id: 'emp-8', ma: 'KD002', ten: 'Đặng Xuân F', phongBan: 'Kinh doanh', viTri: 'Phó phòng' },
-  { id: 'emp-9', ma: 'IT002', ten: 'Bùi Thu G', phongBan: 'IT', viTri: 'Trưởng phòng' },
-  { id: 'emp-10', ma: 'MK002', ten: 'Đỗ Văn H', phongBan: 'Marketing', viTri: 'Chuyên viên' },
-  { id: 'emp-11', ma: 'KT003', ten: 'Hồ Thị I', phongBan: 'Kế toán', viTri: 'Nhân viên' },
-  { id: 'emp-12', ma: 'NS003', ten: 'Ngô Văn K', phongBan: 'Nhân sự', viTri: 'Nhân viên' },
-  { id: 'emp-13', ma: 'KD003', ten: 'Dương Thu L', phongBan: 'Kinh doanh', viTri: 'Nhân viên' },
-  { id: 'emp-14', ma: 'IT003', ten: 'Lý Văn M', phongBan: 'IT', viTri: 'Nhân viên' },
-  { id: 'emp-15', ma: 'MK003', ten: 'Đào Thị N', phongBan: 'Marketing', viTri: 'Phó phòng' },
-  { id: 'emp-16', ma: 'KT004', ten: 'Đoàn Văn O', phongBan: 'Kế toán', viTri: 'Chuyên viên' },
-  { id: 'emp-17', ma: 'NS004', ten: 'Vương Thu P', phongBan: 'Nhân sự', viTri: 'Nhân viên' },
-  { id: 'emp-18', ma: 'KD004', ten: 'Trịnh Văn Q', phongBan: 'Kinh doanh', viTri: 'Chuyên viên' },
-  { id: 'emp-19', ma: 'IT004', ten: 'Đinh Thị R', phongBan: 'IT', viTri: 'Nhân viên' },
-  { id: 'emp-20', ma: 'MK004', ten: 'Lâm Văn S', phongBan: 'Marketing', viTri: 'Nhân viên' },
-];
-
 export default function Employees() {
   const employees = useLiveQuery(() => db.nhanVien.toArray()) || [];
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -53,14 +30,7 @@ export default function Employees() {
   });
 
   useEffect(() => {
-    // Seed initial data if empty
-    const checkAndSeed = async () => {
-      const count = await db.nhanVien.count();
-      if (count === 0) {
-        await db.nhanVien.bulkAdd(MOCK_EMPLOYEES);
-      }
-    };
-    checkAndSeed();
+    // No seeding logic
   }, []);
 
   const onSubmit = async (data: EmployeeForm) => {
