@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
+import { clearLocalDB } from '../db/db';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const Register = () => {
 
       // Automatically log them in since email confirmation is disabled
       if (data.user) {
+        await clearLocalDB();
         login({
           id: data.user.id,
           fullName: data.user.email?.split('@')[0] || 'Sinh viên',
