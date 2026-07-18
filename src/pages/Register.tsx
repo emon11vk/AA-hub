@@ -4,44 +4,52 @@ import { Lock, Mail, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const login = useAuthStore((state) => state.login);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+    setSuccessMsg('');
 
     if (!email.endsWith('@ftu.edu.vn') && !email.endsWith('@gmail.com')) {
       setErrorMsg('Vui lòng sử dụng email có đuôi @ftu.edu.vn hoặc @gmail.com');
       return;
     }
 
+    if (password !== confirmPassword) {
+      setErrorMsg('Mật khẩu và Xác nhận mật khẩu không khớp.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMsg('Mật khẩu phải có ít nhất 6 ký tự.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          setErrorMsg('Email hoặc mật khẩu không chính xác.');
-        } else if (error.message.includes('Email not confirmed')) {
-          setErrorMsg('Vui lòng xác nhận email hoặc liên hệ Admin để tắt tính năng xác nhận.');
-        } else {
-          setErrorMsg(error.message);
-        }
+        setErrorMsg(error.message);
         setIsLoading(false);
         return;
       }
 
+      // Automatically log them in since email confirmation is disabled
       if (data.user) {
         login({
           id: data.user.id,
@@ -51,7 +59,7 @@ const Login = () => {
         navigate('/');
       }
     } catch (err) {
-      setErrorMsg('Đã xảy ra lỗi khi đăng nhập.');
+      setErrorMsg('Đã xảy ra lỗi khi đăng ký.');
     } finally {
       setIsLoading(false);
     }
@@ -75,16 +83,21 @@ const Login = () => {
 
         {/* Form Container */}
         <div className="max-w-md w-full">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Đăng nhập</h1>
-          <p className="text-gray-500 mb-8 text-sm">Hệ thống thực hành Kế toán - Kiểm toán dành cho sinh viên FTU.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Đăng ký</h1>
+          <p className="text-gray-500 mb-8 text-sm">Tạo tài khoản mới để truy cập hệ thống thực hành.</p>
 
           {errorMsg && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
               {errorMsg}
             </div>
           )}
+          {successMsg && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-600 rounded-lg text-sm">
+              {successMsg}
+            </div>
+          )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleRegister} className="space-y-5">
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email sinh viên
@@ -106,14 +119,9 @@ const Login = () => {
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Mật khẩu
-                </label>
-                <a href="#" className="text-sm font-medium text-[#990000] hover:text-[#7a0000] transition-colors">
-                  Quên mật khẩu?
-                </a>
-              </div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Mật khẩu
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-4 w-4 text-gray-400" />
@@ -130,27 +138,36 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-[#990000] focus:ring-[#990000] border-gray-300 rounded cursor-pointer accent-[#990000]"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600 cursor-pointer">
-                Ghi nhớ đăng nhập
+            <div className="space-y-1.5">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Xác nhận mật khẩu
               </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#990000]/20 focus:border-[#990000] transition-colors"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#990000] hover:bg-[#800000] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#990000] disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#990000] hover:bg-[#800000] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#990000] disabled:opacity-70 disabled:cursor-not-allowed transition-all mt-6"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               ) : (
                 <>
-                  Đăng nhập
+                  Đăng ký
                   <ArrowRight className="ml-2 -mr-1 h-4 w-4" />
                 </>
               )}
@@ -158,7 +175,7 @@ const Login = () => {
           </form>
 
           <div className="mt-8 text-center text-sm text-gray-600">
-            Chưa có tài khoản? <Link to="/register" className="font-medium text-[#990000] hover:text-[#7a0000] transition-colors">Đăng ký chứ</Link>
+            Đã có tài khoản? <Link to="/login" className="font-medium text-[#990000] hover:text-[#7a0000] transition-colors">Đăng nhập</Link>
           </div>
 
           <div className="mt-4 text-center text-sm text-gray-500">
@@ -201,4 +218,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

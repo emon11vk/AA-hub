@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import ChartOfAccounts from './pages/Organization/ChartOfAccounts';
 import BusinessInfo from './pages/Organization/BusinessInfo';
 import Employees from './pages/Organization/Employees';
@@ -14,6 +16,7 @@ import TrialBalance from './pages/Reports/TrialBalance';
 import IncomeStatement from './pages/Reports/IncomeStatement';
 import BalanceSheet from './pages/Reports/BalanceSheet';
 import { useAuthStore } from './store/authStore';
+import { SyncService } from './lib/sync';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
@@ -24,10 +27,19 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user) {
+      SyncService.startAutoSync();
+    }
+  }, [user]);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/organization/info" replace />} />
           <Route path="organization">

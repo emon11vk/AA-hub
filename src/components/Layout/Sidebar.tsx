@@ -205,7 +205,7 @@ export default function Sidebar({
 
       <aside className={`bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen fixed md:sticky top-0 z-50 md:z-20 print:hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'w-[72px]' : 'w-[280px]'} ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className={`h-20 flex items-center border-b border-gray-200 transition-all duration-300 ${isCollapsed ? 'justify-center px-0' : 'px-5'}`}>
-          {!isCollapsed && <img src="/faasa-logo-white.png" alt="FAASA Logo" className="w-10 h-10 object-contain mr-3 shrink-0" />}
+          {!isCollapsed && <img src="/faasa-logo.png" alt="FAASA Logo" className="w-10 h-10 object-contain mr-3 shrink-0" />}
           {!isCollapsed && (
             <h1 className="text-[14px] font-bold text-gray-900 flex-1 font-sans tracking-tight leading-tight whitespace-nowrap overflow-hidden">
               Accounting &<br />Auditing Hub

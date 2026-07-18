@@ -2,7 +2,14 @@ import Dexie, { Table } from 'dexie';
 import { seedTaiKhoanKeToan } from './seedData';
 import { dummyChungTu } from './dummyTransactions';
 
-export interface HoSoDoanhNghiep {
+export interface BaseSyncRecord {
+  user_id?: string;
+  isSynced?: boolean;
+  updatedAt?: number;
+}
+
+
+export interface HoSoDoanhNghiep extends BaseSyncRecord {
   id: string;
   tenDN: string;
   diaChi: string;
@@ -16,7 +23,7 @@ export interface HoSoDoanhNghiep {
   createdAt: string;
 }
 
-export interface NhaCungCap {
+export interface NhaCungCap extends BaseSyncRecord {
   id: string;
   ma: string;
   ten: string;
@@ -26,7 +33,7 @@ export interface NhaCungCap {
   daVoHieuHoa?: boolean;
 }
 
-export interface NhanVien {
+export interface NhanVien extends BaseSyncRecord {
   id: string;
   ma: string;
   ten: string;
@@ -34,7 +41,7 @@ export interface NhanVien {
   viTri: string;
 }
 
-export interface KhachHang {
+export interface KhachHang extends BaseSyncRecord {
   id: string;
   ma: string;
   ten: string;
@@ -43,7 +50,7 @@ export interface KhachHang {
   daVoHieuHoa?: boolean;
 }
 
-export interface NganHang {
+export interface NganHang extends BaseSyncRecord {
   id: string;
   ma: string;
   ten: string;
@@ -52,7 +59,7 @@ export interface NganHang {
   daVoHieuHoa?: boolean;
 }
 
-export interface TaiKhoanKeToan {
+export interface TaiKhoanKeToan extends BaseSyncRecord {
   id: string;
   soHieu: string;
   tenTaiKhoan: string;
@@ -86,7 +93,7 @@ export interface ButToan {
   hopDong?: string;
 }
 
-export interface ChungTu {
+export interface ChungTu extends BaseSyncRecord {
   id: string;
   soChungTu: string;
   loaiChungTu: LoaiChungTu;
@@ -109,7 +116,7 @@ export interface ChungTu {
   butToan: ButToan[]; // Can store directly inside or separate table. Since indexedDb can store objects, let's keep it here for easy retrieval
 }
 
-export interface ThanhToan {
+export interface ThanhToan extends BaseSyncRecord {
   id: string;
   chungTuThuChiId: string;
   chungTuHoaDonId: string;
@@ -127,16 +134,16 @@ export class AccountingDB extends Dexie {
   nhanVien!: Table<NhanVien>;
 
   constructor() {
-    super('AccountingDB');
-    this.version(4).stores({
-      hoSoDoanhNghiep: 'id, trangThai',
-      nhaCungCap: 'id, ma',
-      khachHang: 'id, ma',
-      nganHang: 'id, ma',
-      taiKhoanKeToan: 'id, soHieu',
-      chungTu: 'id, soChungTu, loaiChungTu, ngayHachToan',
-      thanhToan: 'id, chungTuThuChiId, chungTuHoaDonId',
-      nhanVien: 'id, ma'
+    super('AccountingDB_v2');
+    this.version(5).stores({
+      hoSoDoanhNghiep: 'id, trangThai, user_id, isSynced, updatedAt',
+      nhaCungCap: 'id, ma, user_id, isSynced, updatedAt',
+      khachHang: 'id, ma, user_id, isSynced, updatedAt',
+      nganHang: 'id, ma, user_id, isSynced, updatedAt',
+      taiKhoanKeToan: 'id, soHieu, user_id, isSynced, updatedAt',
+      chungTu: 'id, soChungTu, loaiChungTu, ngayHachToan, user_id, isSynced, updatedAt',
+      thanhToan: 'id, chungTuThuChiId, chungTuHoaDonId, user_id, isSynced, updatedAt',
+      nhanVien: 'id, ma, user_id, isSynced, updatedAt'
     }).upgrade(trans => {
       // Upgrade logic if needed
     });
@@ -149,3 +156,19 @@ export class AccountingDB extends Dexie {
 }
 
 export const db = new AccountingDB();
+
+export async function clearLocalDB() {
+  await Promise.all([
+    db.hoSoDoanhNghiep.clear(),
+    db.nhaCungCap.clear(),
+    db.khachHang.clear(),
+    db.nganHang.clear(),
+    db.taiKhoanKeToan.clear(),
+    db.chungTu.clear(),
+    db.thanhToan.clear(),
+    db.nhanVien.clear()
+  ]);
+  
+  // Re-seed default accounts
+  await db.taiKhoanKeToan.bulkAdd(seedTaiKhoanKeToan as TaiKhoanKeToan[]);
+}
