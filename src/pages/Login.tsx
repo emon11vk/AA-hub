@@ -67,7 +67,9 @@ const Login = () => {
         {/* Logo/Brand Area */}
         <div className="mb-12">
           <div className="flex items-center gap-3">
-            <img src="/faasa-logo.png" alt="FAASA Logo" className="h-12 w-auto object-contain" />
+            <div className="w-[48px] h-[60px] overflow-hidden flex items-center justify-start shrink-0 relative">
+              <img src="/faasa-logo.png" alt="FAASA Logo" className="absolute max-w-none origin-left" style={{ height: '180px', left: '-18px' }} />
+            </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold text-gray-900 tracking-tight leading-tight">Accounting & Auditing</span>
               <span className="text-sm font-medium text-[#990000]">Practice Hub</span>
