@@ -1,9 +1,10 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Menu, Building2, Landmark, Wallet, BarChart2,
-  ChevronRight, DollarSign, LayoutDashboard, X
+  ChevronRight, DollarSign, LayoutDashboard, X, LogOut
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useAuthStore } from '../../store/authStore';
 
 type NavItem = {
   id: string;
@@ -176,6 +177,7 @@ export default function Sidebar({
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+  const { logout } = useAuthStore();
 
   const [expandedId, setExpandedId] = useState<string | null>(() => {
     const active = navItems.find(item => {
@@ -205,7 +207,11 @@ export default function Sidebar({
 
       <aside className={`bg-white flex flex-col border-r border-gray-200 shrink-0 h-screen fixed md:sticky top-0 z-50 md:z-20 print:hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'w-[72px]' : 'w-[280px]'} ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className={`h-20 flex items-center border-b border-gray-200 transition-all duration-300 ${isCollapsed ? 'justify-center px-0' : 'px-5'}`}>
-          {!isCollapsed && <img src="/faasa-logo-white.png" alt="FAASA Logo" className="w-10 h-10 object-contain mr-3 shrink-0" />}
+          {!isCollapsed && (
+            <div className="w-[36px] h-[45px] overflow-hidden flex items-center justify-start shrink-0 mr-3 relative">
+              <img src="/faasa-logo.png" alt="FAASA Logo" className="absolute max-w-none origin-left" style={{ height: '150px', left: '-15px' }} />
+            </div>
+          )}
           {!isCollapsed && (
             <h1 className="text-[14px] font-bold text-gray-900 flex-1 font-sans tracking-tight leading-tight whitespace-nowrap overflow-hidden">
               Accounting &<br />Auditing Hub
@@ -241,12 +247,22 @@ export default function Sidebar({
         ))}
       </nav>
 
-      <div className={`p-4 border-t border-gray-200 flex items-center font-sans transition-all duration-300 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'}`}>
-          <div className="w-2 h-2 bg-[#b91c1c] rounded-full shrink-0" title="Thực hành kế toán"></div>
-          {!isCollapsed && <span className="text-gray-600 text-xs font-medium whitespace-nowrap">Thực hành kế toán</span>}
+      <div className={`p-4 border-t border-gray-200 flex flex-col font-sans transition-all duration-300`}>
+        <div className={`flex items-center mb-4 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+          <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'}`}>
+            <div className="w-2 h-2 bg-[#b91c1c] rounded-full shrink-0" title="Thực hành kế toán"></div>
+            {!isCollapsed && <span className="text-gray-600 text-xs font-medium whitespace-nowrap">Thực hành kế toán</span>}
+          </div>
+          {!isCollapsed && <div className="text-gray-400 text-xs whitespace-nowrap">v1.0</div>}
         </div>
-        {!isCollapsed && <div className="text-gray-400 text-xs whitespace-nowrap">v1.0</div>}
+        <button
+          onClick={() => logout()}
+          className={`flex items-center justify-center w-full py-2 px-3 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors ${isCollapsed ? 'px-0' : ''}`}
+          title="Đăng xuất"
+        >
+          <LogOut size={16} className={isCollapsed ? '' : 'mr-2'} />
+          {!isCollapsed && <span>Đăng xuất</span>}
+        </button>
       </div>
     </aside>
     </>

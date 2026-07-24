@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { supabase } from '../lib/supabase';
+import { clearLocalDB } from '../db/db';
 
 interface User {
   id: string;
@@ -9,7 +11,7 @@ interface User {
 interface AuthState {
   user: User | null;
   login: (user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => void;
 }
 
@@ -17,7 +19,11 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   login: (user) => set({ user }),
-  logout: () => set({ user: null }),
+  logout: async () => {
+    await supabase.auth.signOut();
+    await clearLocalDB();
+    set({ user: null });
+  },
   updateProfile: (updates) => set((state) => ({
     user: state.user ? { ...state.user, ...updates } : null
   })),
