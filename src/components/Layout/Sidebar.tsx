@@ -248,12 +248,8 @@ export default function Sidebar({
       </nav>
 
       <div className={`p-4 border-t border-gray-200 flex flex-col font-sans transition-all duration-300`}>
-        <div className={`flex items-center mb-4 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-          <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'}`}>
-            <div className="w-2 h-2 bg-[#b91c1c] rounded-full shrink-0" title="Thực hành kế toán"></div>
-            {!isCollapsed && <span className="text-gray-600 text-xs font-medium whitespace-nowrap">Thực hành kế toán</span>}
-          </div>
-          {!isCollapsed && <div className="text-gray-400 text-xs whitespace-nowrap">v1.0</div>}
+        <div className={`flex items-center justify-center mb-4`}>
+          <img src="/FTULAB.png" alt="FTU LAB Logo" className={`object-contain transition-all duration-300 ${isCollapsed ? 'h-6' : 'h-8'}`} />
         </div>
         <button
           onClick={() => logout()}
